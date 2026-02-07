@@ -13,3 +13,6 @@ logs/
 
 # Ignore backup files
 *.java~
+
+# Ignore notes, TO-DO lists, and other temporary files
+.dev/

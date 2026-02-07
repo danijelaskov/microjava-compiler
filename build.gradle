@@ -6,6 +6,12 @@ plugins {
 group 'dev.askov.mjcompiler'
 version '1.0'
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
+}
+
 repositories {
     mavenCentral()
     flatDir {
@@ -49,5 +55,5 @@ tasks.register('genParser', JavaExec) {
 }
 
 application {
-    mainClassName = 'dev.askov.mjcompiler.MJCompiler'
+    mainClass.set('dev.askov.mjcompiler.MJCompiler')
 }
