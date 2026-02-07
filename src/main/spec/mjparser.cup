@@ -17,12 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package askov.schoolprojects.compilerconstruction.mjcompiler;
+package dev.askov.mjcompiler;
 
 import java_cup.runtime.*;
-import askov.schoolprojects.compilerconstruction.mjcompiler.ast.*;
+import dev.askov.mjcompiler.ast.*;
 import org.apache.log4j.*;
-import askov.schoolprojects.compilerconstruction.mjcompiler.loggers.SyntaxErrorMJLogger;
+import dev.askov.mjcompiler.loggers.SyntaxErrorMJLogger;
 
 parser code {:
 	

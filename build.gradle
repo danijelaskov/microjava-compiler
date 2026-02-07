@@ -3,7 +3,7 @@ plugins {
     id 'application'
 }
 
-group 'askov.schoolprojects.compilerconstruction.mjcompiler'
+group 'dev.askov.mjcompiler'
 version '1.0'
 
 repositories {
@@ -38,16 +38,16 @@ tasks.register('disassemble', JavaExec) {
 tasks.register('genLexer', JavaExec) {
     mainClass = 'JFlex.Main'
     classpath = sourceSets.main.compileClasspath
-    args "-d", "src/main/java/askov/schoolprojects/compilerconstruction/mjcompiler", "src/main/spec/mjlexer.flex"
+    args "-d", "src/main/java/dev/askov/mjcompiler", "src/main/spec/mjlexer.flex"
 }
 
 tasks.register('genParser', JavaExec) {
     mainClass = 'java_cup.Main'
     classpath = sourceSets.main.compileClasspath - files("libs/JFlex.jar")
     workingDir = 'src/main/java'
-    args "-destdir", "askov/schoolprojects/compilerconstruction/mjcompiler", "-debug", "-dump_states", "-parser", "MJParser", "-ast", "askov.schoolprojects.compilerconstruction.mjcompiler.ast", "-buildtree", "../spec/mjparser.cup"
+    args "-destdir", "dev/askov/mjcompiler", "-debug", "-dump_states", "-parser", "MJParser", "-ast", "dev.askov.compilerconstruction.mjcompiler.ast", "-buildtree", "../spec/mjparser.cup"
 }
 
 application {
-    mainClassName = 'askov.schoolprojects.compilerconstruction.mjcompiler.MJCompiler'
+    mainClassName = 'dev.askov.mjcompiler.MJCompiler'
 }

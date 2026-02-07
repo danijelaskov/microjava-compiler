@@ -17,10 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package askov.schoolprojects.compilerconstruction.mjcompiler;
+package dev.askov.mjcompiler;
 
 import java_cup.runtime.Symbol;
-import askov.schoolprojects.compilerconstruction.mjcompiler.loggers.LexicalErrorMJLogger;
+import dev.askov.mjcompiler.loggers.LexicalErrorMJLogger;
 
 %%
 
