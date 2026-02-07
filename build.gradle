@@ -38,14 +38,14 @@ tasks.register('disassemble', JavaExec) {
 tasks.register('genLexer', JavaExec) {
     mainClass = 'JFlex.Main'
     classpath = sourceSets.main.compileClasspath
-    args "-d", "src/main/java/dev/askov/mjcompiler", "src/main/spec/mjlexer.flex"
+    args "-d", "src/main/java/dev/askov/mjcompiler", "src/main/resources/mjlexer.flex"
 }
 
 tasks.register('genParser', JavaExec) {
     mainClass = 'java_cup.Main'
     classpath = sourceSets.main.compileClasspath - files("libs/JFlex.jar")
     workingDir = 'src/main/java'
-    args "-destdir", "dev/askov/mjcompiler", "-debug", "-dump_states", "-parser", "MJParser", "-ast", "dev.askov.compilerconstruction.mjcompiler.ast", "-buildtree", "../spec/mjparser.cup"
+    args "-destdir", "dev/askov/mjcompiler", "-debug", "-dump_states", "-parser", "MJParser", "-ast", "dev.askov.compilerconstruction.mjcompiler.ast", "-buildtree", "../resources/mjparser.cup"
 }
 
 application {
