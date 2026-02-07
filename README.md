@@ -9,7 +9,7 @@
 As the name suggests, **MicroJava** is *similar* to **Java** (which you are, probably, already familiar with), but it's *simpler*.
 Similarly to Java, MicroJava source files are compiled to **bytecode**, which is then executed by a **virtual machine** (it's called (as you might have guessed) **MicroJava Virtual Machine**). MicroJava VM is a simple *interpretative emulator* (i.e. it does not have any support for some "fancy" techniques such as, e.g., *Just-In-Time compilation*).
 
-![Compilation process](img/compilation.png)
+![Compilation process](.readme/compilation.png)
 
 Full project specification can be found [here](https://1drv.ms/b/s!AuZ7wmWsDfythjkXnkK3T5gJ7NIy) and [here](https://1drv.ms/b/s!AuZ7wmWsDfythjgxu8VErKo9wBa7) (Serbian language only).
 Note that I have used custom directory structure (not the one defined in the specification).
