@@ -20,10 +20,7 @@
 package dev.askov.mjcompiler.exceptions;
 
 /**
- *
  * @author Danijel Askov
  */
 @SuppressWarnings("serial")
-public class WrongStructKindException extends Exception {
-
-}
+public class WrongStructKindException extends Exception {}

@@ -23,6 +23,5 @@ import dev.askov.mjcompiler.inheritancetree.InheritanceTreeNode;
 
 public interface InheritanceTreeVisitor {
 
-    void visit(InheritanceTreeNode node);
-
+  void visit(InheritanceTreeNode node);
 }

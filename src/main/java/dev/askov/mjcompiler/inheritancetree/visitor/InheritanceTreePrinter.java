@@ -23,17 +23,19 @@ import dev.askov.mjcompiler.inheritancetree.InheritanceTreeNode;
 
 public class InheritanceTreePrinter implements InheritanceTreeVisitor {
 
-    private final StringBuilder stringBuilder = new StringBuilder();
+  private final StringBuilder stringBuilder = new StringBuilder();
 
-    @Override
-    public void visit(InheritanceTreeNode node) {
-        stringBuilder.append("InheritanceTreeNode (" + node.getClss().getName()
-                + (node.getParent() != null ? " extends " + node.getParent().getClss().getName() : "") + ") : ");
-        stringBuilder.append(node.getVMT() + "\n");
-    }
+  @Override
+  public void visit(InheritanceTreeNode node) {
+    stringBuilder.append(
+        "InheritanceTreeNode ("
+            + node.getClss().getName()
+            + (node.getParent() != null ? " extends " + node.getParent().getClss().getName() : "")
+            + ") : ");
+    stringBuilder.append(node.getVMT() + "\n");
+  }
 
-    public String getOutput() {
-        return stringBuilder.toString();
-    }
-
+  public String getOutput() {
+    return stringBuilder.toString();
+  }
 }

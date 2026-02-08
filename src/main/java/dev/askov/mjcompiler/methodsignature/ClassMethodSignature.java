@@ -26,30 +26,30 @@ import rs.etf.pp1.symboltable.concepts.Obj;
 import rs.etf.pp1.symboltable.concepts.Struct;
 
 /**
- *
  * @author Danijel Askov
  */
 public class ClassMethodSignature extends MethodSignature {
 
-    private final Struct clss;
+  private final Struct clss;
 
-    public ClassMethodSignature(Obj method, Struct clss) throws WrongObjKindException {
-        super(method, true);
-        this.clss = clss;
-    }
+  public ClassMethodSignature(Obj method, Struct clss) throws WrongObjKindException {
+    super(method, true);
+    this.clss = clss;
+  }
 
-    public ClassMethodSignature(String name, Struct clss) {
-        super(name);
-        this.clss = clss;
-    }
+  public ClassMethodSignature(String name, Struct clss) {
+    super(name);
+    this.clss = clss;
+  }
 
-    public Struct getThisParameterType() {
-        return clss;
-    }
+  public Struct getThisParameterType() {
+    return clss;
+  }
 
-    @Override
-    public String toString() {
-        return clss != MJTab.noType ? MJUtils.typeToString(clss) + "." + super.toString() : super.toString();
-    }
-
+  @Override
+  public String toString() {
+    return clss != MJTab.noType
+        ? MJUtils.typeToString(clss) + "." + super.toString()
+        : super.toString();
+  }
 }

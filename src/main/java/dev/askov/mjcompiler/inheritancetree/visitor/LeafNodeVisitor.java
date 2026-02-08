@@ -19,24 +19,22 @@
 
 package dev.askov.mjcompiler.inheritancetree.visitor;
 
+import dev.askov.mjcompiler.inheritancetree.InheritanceTreeNode;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.askov.mjcompiler.inheritancetree.InheritanceTreeNode;
-
 public class LeafNodeVisitor implements InheritanceTreeVisitor {
 
-    public final List<InheritanceTreeNode> leafNodes = new ArrayList<>();
+  public final List<InheritanceTreeNode> leafNodes = new ArrayList<>();
 
-    @Override
-    public void visit(InheritanceTreeNode node) {
-        if (!node.hasChildren()) {
-            leafNodes.add(node);
-        }
+  @Override
+  public void visit(InheritanceTreeNode node) {
+    if (!node.hasChildren()) {
+      leafNodes.add(node);
     }
+  }
 
-    public List<InheritanceTreeNode> getLeafNodes() {
-        return leafNodes;
-    }
-
+  public List<InheritanceTreeNode> getLeafNodes() {
+    return leafNodes;
+  }
 }

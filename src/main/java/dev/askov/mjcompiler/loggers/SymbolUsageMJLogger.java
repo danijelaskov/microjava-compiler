@@ -25,64 +25,66 @@ import rs.etf.pp1.symboltable.concepts.Obj;
 import rs.etf.pp1.symboltable.concepts.Struct;
 
 /**
- *
  * @author Danijel Askov
  */
 public final class SymbolUsageMJLogger extends MJLogger<Obj> {
 
-    private final MJDumpSymbolTableVisitor symbolTableVisitor = new MJDumpSymbolTableVisitor(false);
+  private final MJDumpSymbolTableVisitor symbolTableVisitor = new MJDumpSymbolTableVisitor(false);
 
-    public SymbolUsageMJLogger() {
-        super(MJLoggerKind.INFO_LOGGER, "Symbol usage");
-    }
+  public SymbolUsageMJLogger() {
+    super(MJLoggerKind.INFO_LOGGER, "Symbol usage");
+  }
 
-    @Override
-    protected String messageBody(Obj obj, Object... context) {
-        String message = null;
+  @Override
+  protected String messageBody(Obj obj, Object... context) {
+    String message = null;
 
-        symbolTableVisitor.clearOutput();
-        obj.accept(symbolTableVisitor);
-        switch (obj.getKind()) {
-            case Obj.NO_VALUE -> message = "undeclared symbol \"" + obj.getName() + "\"";
-            case Obj.Con -> message = "symbolic constant \"" + obj.getName() + "\"";
-            case Obj.Var -> {
-                String scalarOrVector = obj.getType().getKind() == Struct.Array ? "vector" : "scalar";
-                switch (obj.getLevel()) {
-                    case 0 -> message = "global " + scalarOrVector + " variable \"" + obj.getName() + "\"";
-                    case 1 -> {
-                        boolean thisParameter = obj.getName().equals(SemanticAnalyzer.THIS);
-                        if (obj.getAdr() < ((Obj) context[0]).getLevel()) {
-                            message = (thisParameter ? "implicit " : "") + scalarOrVector + " formal parameter \""
-                                + obj.getName() + "\"";
-                        } else {
-                            message = "local " + scalarOrVector + " variable \"" + obj.getName() + "\"";
-                        }
-                    }
-                }
+    symbolTableVisitor.clearOutput();
+    obj.accept(symbolTableVisitor);
+    switch (obj.getKind()) {
+      case Obj.NO_VALUE -> message = "undeclared symbol \"" + obj.getName() + "\"";
+      case Obj.Con -> message = "symbolic constant \"" + obj.getName() + "\"";
+      case Obj.Var -> {
+        String scalarOrVector = obj.getType().getKind() == Struct.Array ? "vector" : "scalar";
+        switch (obj.getLevel()) {
+          case 0 -> message = "global " + scalarOrVector + " variable \"" + obj.getName() + "\"";
+          case 1 -> {
+            boolean thisParameter = obj.getName().equals(SemanticAnalyzer.THIS);
+            if (obj.getAdr() < ((Obj) context[0]).getLevel()) {
+              message =
+                  (thisParameter ? "implicit " : "")
+                      + scalarOrVector
+                      + " formal parameter \""
+                      + obj.getName()
+                      + "\"";
+            } else {
+              message = "local " + scalarOrVector + " variable \"" + obj.getName() + "\"";
             }
-            case Obj.Meth -> {
-                boolean globalMethod = true;
-                for (Obj formalPar : obj.getLocalSymbols()) {
-                    if (formalPar.getName().equals(SemanticAnalyzer.THIS)) {
-                        globalMethod = false;
-                        break;
-                    }
-                }
-                if (globalMethod) {
-                    message = "global method \"" + obj.getName() + "\" invocation";
-                } else {
-                    message = "inner class method \"" + obj.getName() + "\" invocation";
-                }
-            }
-            case Obj.Fld -> {
-                String scalarOrVector = obj.getType().getKind() == Struct.Array ? "vector" : "scalar";
-                message = scalarOrVector + " inner class field \"" + obj.getName() + "\" access";
-            }
-            case Obj.Elem -> message = "vector \"" + ((Obj) context[0]).getName() + "\" element access";
-            case Obj.Type -> message = "inner class \"" + obj.getName() + "\" instantiation";
+          }
         }
-
-        return message + ", " + symbolTableVisitor.getOutput();
+      }
+      case Obj.Meth -> {
+        boolean globalMethod = true;
+        for (Obj formalPar : obj.getLocalSymbols()) {
+          if (formalPar.getName().equals(SemanticAnalyzer.THIS)) {
+            globalMethod = false;
+            break;
+          }
+        }
+        if (globalMethod) {
+          message = "global method \"" + obj.getName() + "\" invocation";
+        } else {
+          message = "inner class method \"" + obj.getName() + "\" invocation";
+        }
+      }
+      case Obj.Fld -> {
+        String scalarOrVector = obj.getType().getKind() == Struct.Array ? "vector" : "scalar";
+        message = scalarOrVector + " inner class field \"" + obj.getName() + "\" access";
+      }
+      case Obj.Elem -> message = "vector \"" + ((Obj) context[0]).getName() + "\" element access";
+      case Obj.Type -> message = "inner class \"" + obj.getName() + "\" instantiation";
     }
 
+    return message + ", " + symbolTableVisitor.getOutput();
+  }
 }

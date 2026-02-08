@@ -20,10 +20,7 @@
 package dev.askov.mjcompiler.exceptions;
 
 /**
- *
  * @author Danijel Askov
  */
 @SuppressWarnings("serial")
-public class WrongObjKindException extends Exception {
-
-}
+public class WrongObjKindException extends Exception {}

@@ -1,6 +1,7 @@
 plugins {
     java
     application
+    id("com.diffplug.spotless") version "8.2.1"
 }
 
 group = "dev.askov.mjcompiler"
@@ -34,11 +35,32 @@ dependencies {
     implementation(":symboltable")
 }
 
+spotless {
+    java {
+        target("src/*/java/**/*.java")
+
+        googleJavaFormat("1.25.0")
+
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    kotlinGradle {
+        target("*.gradle.kts")
+        ktlint()
+    }
+}
+
 tasks.test {
     testLogging {
         outputs.upToDateWhen { false }
         showStandardStreams = true
     }
+}
+
+tasks.build {
+    dependsOn("spotlessCheck")
 }
 
 val jflexDir = layout.buildDirectory.dir("generated/sources/jflex/java/main").get()
@@ -65,7 +87,11 @@ tasks.register<JavaExec>("parser") {
     group = "generation"
     dependsOn("lexer")
     mainClass.set("java_cup.Main")
-    classpath = sourceSets.main.get().compileClasspath.minus(files("libs/JFlex.jar"))
+    classpath =
+        sourceSets.main
+            .get()
+            .compileClasspath
+            .minus(files("libs/JFlex.jar"))
 
     val genSourceRoot = cupDir.asFile
 
@@ -79,11 +105,14 @@ tasks.register<JavaExec>("parser") {
     }
 
     args(
-        "-destdir", "dev/askov/mjcompiler",
-        "-parser", "MJParser",
-        "-ast", "dev.askov.mjcompiler.ast",
+        "-destdir",
+        "dev/askov/mjcompiler",
+        "-parser",
+        "MJParser",
+        "-ast",
+        "dev.askov.mjcompiler.ast",
         "-buildtree",
-        file("src/main/resources/mjparser.cup").absolutePath
+        file("src/main/resources/mjparser.cup").absolutePath,
     )
 }
 
@@ -96,7 +125,7 @@ tasks.clean {
         "src/main/java/dev/askov/mjcompiler/MJLexer.java",
         "src/main/java/dev/askov/mjcompiler/MJParser.java",
         "src/main/java/dev/askov/mjcompiler/sym.java",
-        "src/main/java/dev/askov/mjcompiler/ast"
+        "src/main/java/dev/askov/mjcompiler/ast",
     )
 }
 

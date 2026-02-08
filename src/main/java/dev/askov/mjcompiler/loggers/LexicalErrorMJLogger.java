@@ -20,18 +20,16 @@
 package dev.askov.mjcompiler.loggers;
 
 /**
- *
  * @author Danijel Askov
  */
 public class LexicalErrorMJLogger extends MJLogger<String> {
 
-    public LexicalErrorMJLogger() {
-        super(MJLoggerKind.ERROR_LOGER, "Lexical error");
-    }
+  public LexicalErrorMJLogger() {
+    super(MJLoggerKind.ERROR_LOGER, "Lexical error");
+  }
 
-    @Override
-    protected String messageBody(String symbol, Object... context) {
-        return "token \"" + symbol + "\" not recognized";
-    }
-
+  @Override
+  protected String messageBody(String symbol, Object... context) {
+    return "token \"" + symbol + "\" not recognized";
+  }
 }

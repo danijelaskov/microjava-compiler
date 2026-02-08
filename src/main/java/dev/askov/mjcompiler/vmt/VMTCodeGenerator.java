@@ -23,14 +23,12 @@ import dev.askov.mjcompiler.inheritancetree.InheritanceTreeNode;
 import dev.askov.mjcompiler.inheritancetree.visitor.InheritanceTreeVisitor;
 
 /**
- *
  * @author Danijel Askov
  */
 public class VMTCodeGenerator implements InheritanceTreeVisitor {
 
-    @Override
-    public void visit(InheritanceTreeNode node) {
-        node.getVMT().generateCreationCode();
-    }
-
+  @Override
+  public void visit(InheritanceTreeNode node) {
+    node.getVMT().generateCreationCode();
+  }
 }

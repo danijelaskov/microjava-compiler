@@ -21,53 +21,53 @@ package dev.askov.mjcompiler.util;
 
 import java.io.File;
 import java.net.URL;
-
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 
 /**
- *
  * @author Danijel Askov
  */
 public class Log4JUtils {
 
-    private static final Log4JUtils logs = new Log4JUtils();
+  private static final Log4JUtils logs = new Log4JUtils();
 
-    public static Log4JUtils instance() {
-        return logs;
+  public static Log4JUtils instance() {
+    return logs;
+  }
+
+  public URL findLoggerConfigFile() {
+    return Thread.currentThread().getContextClassLoader().getResource("log4j.xml");
+  }
+
+  public void prepareLogFile(Logger root) {
+    Appender appenderAll = root.getAppender("file_all"),
+        appenderError = root.getAppender("file_err"),
+        appenderInfo = root.getAppender("file_info");
+
+    if (!(appenderAll instanceof FileAppender fAppenderAll)
+        || !(appenderError instanceof FileAppender fAppenderError)
+        || !(appenderInfo instanceof FileAppender fAppenderInfo)) {
+      return;
     }
 
-    public URL findLoggerConfigFile() {
-        return Thread.currentThread().getContextClassLoader().getResource("log4j.xml");
-    }
+    String fNameAll = fAppenderAll.getFile(),
+        fNameError = fAppenderError.getFile(),
+        fNameInfo = fAppenderInfo.getFile();
 
-    public void prepareLogFile(Logger root) {
-        Appender appenderAll = root.getAppender("file_all"), appenderError = root.getAppender("file_err"),
-                appenderInfo = root.getAppender("file_info");
+    fNameAll = fNameAll.substring(0, fNameAll.lastIndexOf('.'));
+    fNameError = fNameError.substring(0, fNameError.lastIndexOf('.'));
+    fNameInfo = fNameInfo.substring(0, fNameInfo.lastIndexOf('.'));
 
-        if (!(appenderAll instanceof FileAppender fAppenderAll) || !(appenderError instanceof FileAppender fAppenderError)
-                || !(appenderInfo instanceof FileAppender fAppenderInfo)) {
-            return;
-        }
+    File fAllRenamed = new File(fNameAll + "_" + System.currentTimeMillis() + ".log");
+    File fErrorRenamed = new File(fNameError + "_" + System.currentTimeMillis() + ".log");
+    File fInfoRenamed = new File(fNameInfo + "_" + System.currentTimeMillis() + ".log");
 
-        String fNameAll = fAppenderAll.getFile(), fNameError = fAppenderError.getFile(),
-                fNameInfo = fAppenderInfo.getFile();
-
-        fNameAll = fNameAll.substring(0, fNameAll.lastIndexOf('.'));
-        fNameError = fNameError.substring(0, fNameError.lastIndexOf('.'));
-        fNameInfo = fNameInfo.substring(0, fNameInfo.lastIndexOf('.'));
-
-        File fAllRenamed = new File(fNameAll + "_" + System.currentTimeMillis() + ".log");
-        File fErrorRenamed = new File(fNameError + "_" + System.currentTimeMillis() + ".log");
-        File fInfoRenamed = new File(fNameInfo + "_" + System.currentTimeMillis() + ".log");
-
-        fAppenderAll.setFile(fAllRenamed.getAbsolutePath());
-        fAppenderAll.activateOptions();
-        fAppenderError.setFile(fErrorRenamed.getAbsolutePath());
-        fAppenderError.activateOptions();
-        fAppenderInfo.setFile(fInfoRenamed.getAbsolutePath());
-        fAppenderInfo.activateOptions();
-    }
-
+    fAppenderAll.setFile(fAllRenamed.getAbsolutePath());
+    fAppenderAll.activateOptions();
+    fAppenderError.setFile(fErrorRenamed.getAbsolutePath());
+    fAppenderError.activateOptions();
+    fAppenderInfo.setFile(fInfoRenamed.getAbsolutePath());
+    fAppenderInfo.activateOptions();
+  }
 }

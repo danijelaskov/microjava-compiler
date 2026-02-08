@@ -19,73 +19,72 @@
 
 package dev.askov.mjcompiler.inheritancetree;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import dev.askov.mjcompiler.exceptions.WrongObjKindException;
 import dev.askov.mjcompiler.exceptions.WrongStructKindException;
 import dev.askov.mjcompiler.inheritancetree.visitor.InheritanceTreeVisitor;
 import dev.askov.mjcompiler.vmt.VMT;
+import java.util.ArrayList;
+import java.util.List;
 import rs.etf.pp1.symboltable.concepts.Obj;
 import rs.etf.pp1.symboltable.concepts.Struct;
 
 /**
- *
  * @author Danijel Askov
  */
 public class InheritanceTreeNode {
 
-    private final List<InheritanceTreeNode> children = new ArrayList<>();
-    private final InheritanceTreeNode parent;
+  private final List<InheritanceTreeNode> children = new ArrayList<>();
+  private final InheritanceTreeNode parent;
 
-    private final Obj clss;
-    private final VMT vmt = new VMT();
+  private final Obj clss;
+  private final VMT vmt = new VMT();
 
-    public InheritanceTreeNode(Obj clss, InheritanceTreeNode parent) throws WrongObjKindException, WrongStructKindException {
-        if (clss == null || clss.getType() == null) {
-            throw new NullPointerException();
-        }
-        if (clss.getKind() != Obj.Type) {
-            throw new WrongObjKindException();
-        }
-        if (clss.getType().getKind() != Struct.Class) {
-            throw new WrongStructKindException();
-        }
-        this.parent = parent;
-        if (this.parent != null) {
-            this.parent.children.add(this);
-        }
-        this.clss = clss;
+  public InheritanceTreeNode(Obj clss, InheritanceTreeNode parent)
+      throws WrongObjKindException, WrongStructKindException {
+    if (clss == null || clss.getType() == null) {
+      throw new NullPointerException();
     }
-
-    public InheritanceTreeNode(Obj clss) throws WrongObjKindException, WrongStructKindException {
-        this(clss, InheritanceTree.ROOT_NODE);
+    if (clss.getKind() != Obj.Type) {
+      throw new WrongObjKindException();
     }
-
-    public Obj getClss() {
-        return clss;
+    if (clss.getType().getKind() != Struct.Class) {
+      throw new WrongStructKindException();
     }
-
-    public VMT getVMT() {
-        return vmt;
+    this.parent = parent;
+    if (this.parent != null) {
+      this.parent.children.add(this);
     }
+    this.clss = clss;
+  }
 
-    public InheritanceTreeNode getParent() {
-        return parent;
-    }
+  public InheritanceTreeNode(Obj clss) throws WrongObjKindException, WrongStructKindException {
+    this(clss, InheritanceTree.ROOT_NODE);
+  }
 
-    public List<InheritanceTreeNode> getChildren() {
-        return children;
-    }
+  public Obj getClss() {
+    return clss;
+  }
 
-    public boolean hasChildren() {
-        return children.size() != 0;
-    }
+  public VMT getVMT() {
+    return vmt;
+  }
 
-    public void accept(InheritanceTreeVisitor inheritanceTreeNodeVisitor) {
-        inheritanceTreeNodeVisitor.visit(this);
-        for (InheritanceTreeNode child : children) {
-            child.accept(inheritanceTreeNodeVisitor);
-        }
+  public InheritanceTreeNode getParent() {
+    return parent;
+  }
+
+  public List<InheritanceTreeNode> getChildren() {
+    return children;
+  }
+
+  public boolean hasChildren() {
+    return children.size() != 0;
+  }
+
+  public void accept(InheritanceTreeVisitor inheritanceTreeNodeVisitor) {
+    inheritanceTreeNodeVisitor.visit(this);
+    for (InheritanceTreeNode child : children) {
+      child.accept(inheritanceTreeNodeVisitor);
     }
+  }
 }
