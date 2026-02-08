@@ -19,7 +19,6 @@
 
 package dev.askov.mjcompiler;
 
-import dev.askov.mjcompiler.ast.Addop;
 import dev.askov.mjcompiler.ast.AddopExpr;
 import dev.askov.mjcompiler.ast.AndCondTerm;
 import dev.askov.mjcompiler.ast.ArrayElemAccessDesignator;
@@ -63,7 +62,6 @@ import dev.askov.mjcompiler.ast.MethodDecl;
 import dev.askov.mjcompiler.ast.MethodEnd;
 import dev.askov.mjcompiler.ast.MethodName;
 import dev.askov.mjcompiler.ast.MinusTermExpr;
-import dev.askov.mjcompiler.ast.Mulop;
 import dev.askov.mjcompiler.ast.MulopTerm;
 import dev.askov.mjcompiler.ast.MultipleExprExprList;
 import dev.askov.mjcompiler.ast.NeqRelop;
@@ -82,7 +80,6 @@ import dev.askov.mjcompiler.ast.ProgramEnd;
 import dev.askov.mjcompiler.ast.ProgramName;
 import dev.askov.mjcompiler.ast.ReadStatement;
 import dev.askov.mjcompiler.ast.RelOpCondFactor;
-import dev.askov.mjcompiler.ast.Relop;
 import dev.askov.mjcompiler.ast.ReturnExprStatement;
 import dev.askov.mjcompiler.ast.ReturnNothingStatement;
 import dev.askov.mjcompiler.ast.ScalarField;
@@ -135,10 +132,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     return semanticErrorDetected;
   }
 
-  public void detectSemnaticError() {
-    semanticErrorDetected = true;
-  }
-
   private void detectSemanticError(
       Obj symbolObj,
       SyntaxNode syntaxNode,
@@ -179,16 +172,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
   private boolean detectErrors = true;
   public final Stack<Obj> thisParameterObjs = new Stack<>();
 
-  public int getFormParCounter() {
-    return formParCounter;
-  }
-
   public int getStaticVarsCount() {
     return staticVarsCount;
-  }
-
-  public SemanticErrorMJLogger getSemanticErrorMJLogger() {
-    return semanticErrorMJLogger;
   }
 
   private boolean printBoolMethodIsUsed = false;
@@ -199,7 +184,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
   private boolean scalarTimesVectorMethodIsUsed = false;
 
   private Obj findNearestDeclaration(String identName, boolean skipCurrentScope) {
-    Obj result = Tab.noObj;
+    var result = Tab.noObj;
 
     if (!skipCurrentScope) {
       result = findInCurrentScope(identName);
@@ -213,7 +198,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
       if (result == Tab.noObj) {
         // Pretrazuju se nasledjena polja
-        Struct superclass = currentClassObj.getType().getElemType();
+        var superclass = currentClassObj.getType().getElemType();
         Obj foundMethod;
         while (superclass != null) {
           foundMethod = superclass.getMembersTable().searchKey(identName);
@@ -235,7 +220,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
   }
 
   private Obj findNearestDeclaration(String identName, Obj instanceObj) {
-    Obj result = Tab.noObj;
+    var result = Tab.noObj;
 
     SymbolDataStructure targetSymbolDataStructure;
     if (currentClassObj.getType() == instanceObj.getType()) {
@@ -245,7 +230,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
       targetSymbolDataStructure = instanceObj.getType().getMembersTable();
     }
 
-    Struct superclass = instanceObj.getType();
+    var superclass = instanceObj.getType();
     Obj foundMethod;
     while (targetSymbolDataStructure != null) {
       foundMethod = targetSymbolDataStructure.searchKey(identName);
@@ -262,9 +247,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   private Obj findNearestDeclaration(MethodSignature classMethodSignature, Obj clss) {
     if (clss != null && clss.getType().getKind() == Struct.Class) {
-      Struct currentClass = clss.getType().getElemType();
+      var currentClass = clss.getType().getElemType();
       while (currentClass != null) {
-        Obj method = currentClass.getMembersTable().searchKey(classMethodSignature.getMethodName());
+        var method = currentClass.getMembersTable().searchKey(classMethodSignature.getMethodName());
         if (method != null && method != Tab.noObj && method.getKind() == Obj.Meth) {
           try {
             if (new ClassMethodSignature(method, MJTab.noType)
@@ -282,10 +267,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
   }
 
   private void validateOverriding(MethodDecl methodDecl) {
-    Struct clss = currentClassObj.getType().getElemType();
-    Obj overridingMethod = methodDecl.getMethodName().obj;
+    var clss = currentClassObj.getType().getElemType();
+    var overridingMethod = methodDecl.getMethodName().obj;
     while (clss != null) {
-      Obj overriddenMethod =
+      var overriddenMethod =
           clss.getMembersTable().searchKey(methodDecl.getMethodName().obj.getName());
       try {
         if (MJUtils.haveSameSignatures(overridingMethod, overriddenMethod)
@@ -308,7 +293,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
   }
 
   private Obj findInCurrentScope(String identName) {
-    Obj result = MJTab.currentScope.findSymbol(identName);
+    var result = MJTab.currentScope.findSymbol(identName);
     if (result == null) {
       result = Tab.noObj;
     }
@@ -316,7 +301,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
   }
 
   private Obj findInOuterScope(String identName) {
-    Obj result = MJTab.currentScope.getOuter().findSymbol(identName);
+    var result = MJTab.currentScope.getOuter().findSymbol(identName);
     if (result == null) {
       result = Tab.noObj;
     }
@@ -325,7 +310,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   private Obj findInSomeOuterScope(String identName) {
     Obj resultObj = null;
-    for (Scope s = MJTab.currentScope.getOuter(); s != null; s = s.getOuter()) {
+    for (var s = MJTab.currentScope.getOuter(); s != null; s = s.getOuter()) {
       if (s.getLocals() != null) {
         resultObj = s.getLocals().searchKey(identName);
         if (resultObj != null) {
@@ -345,9 +330,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(ProgramName programName) {
-    String programIdent = programName.getIdent();
+    var programIdent = programName.getIdent();
 
-    Obj progObj = findInCurrentScope(programIdent); // Pretražuje se UNIVERSE opseg.
+    var progObj = findInCurrentScope(programIdent); // Pretražuje se UNIVERSE opseg.
 
     if (progObj == Tab.noObj) {
       programName.obj = MJTab.insert(Obj.Prog, programIdent, MJTab.noType);
@@ -363,7 +348,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(ProgramEnd programEnd) {
-    Obj mainObj = findInCurrentScope(MAIN); // Pretražuje se PROGRAM opseg.
+    var mainObj = findInCurrentScope(MAIN); // Pretražuje se PROGRAM opseg.
 
     if (mainObj == MJTab.noObj) {
       detectSemanticError(null, programEnd, SemanticErrorKind.MAIN_METHOD_DECL_NOT_FOUND);
@@ -383,9 +368,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(Type type) {
-    String typeIdent = type.getIdent();
+    var typeIdent = type.getIdent();
 
-    Obj typeObj = findInCurrentOrSomeOuterScope(typeIdent);
+    var typeObj = findInCurrentOrSomeOuterScope(typeIdent);
 
     if (typeObj.getKind() == Obj.Type) {
       type.obj = typeObj;
@@ -420,14 +405,14 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(Const constant) {
-    String constantIdent = constant.getIdent();
+    var constantIdent = constant.getIdent();
 
-    Obj constantObj = findInCurrentScope(constantIdent);
+    var constantObj = findInCurrentScope(constantIdent);
     // Pretražuju se PROGRAM i UNIVERSE opsezi.
 
     if (constantObj == Tab.noObj) {
       constantObj = MJTab.insert(Obj.Con, constant.getIdent(), currentType);
-      Struct initializerType = constant.getLiteral().obj.getType();
+      var initializerType = constant.getLiteral().obj.getType();
       if (initializerType.equals(currentType)) {
         constantObj.setAdr(constant.getLiteral().obj.getAdr());
       } else {
@@ -453,8 +438,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(ScalarGlobalVar scalarGlobalVar) {
-    String varIdent = scalarGlobalVar.getIdent();
-    Obj varObj = findInCurrentScope(varIdent);
+    var varIdent = scalarGlobalVar.getIdent();
+    var varObj = findInCurrentScope(varIdent);
 
     if (varObj == Tab.noObj) {
       MJTab.insert(Obj.Var, varIdent, currentType);
@@ -465,8 +450,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(ScalarField scalarField) {
-    String fieldIdent = scalarField.getIdent();
-    Obj fieldObj = findInCurrentScope(fieldIdent);
+    var fieldIdent = scalarField.getIdent();
+    var fieldObj = findInCurrentScope(fieldIdent);
 
     if (fieldObj == Tab.noObj) {
       currentClassObj.setAdr(currentClassObj.getAdr() + 1);
@@ -478,8 +463,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(ScalarLocalVar scalarLocalVar) {
-    String varIdent = scalarLocalVar.getIdent();
-    Obj localVarObj = findInCurrentScope(varIdent);
+    var varIdent = scalarLocalVar.getIdent();
+    var localVarObj = findInCurrentScope(varIdent);
 
     if (localVarObj == Tab.noObj) {
       MJTab.insert(Obj.Var, varIdent, currentType);
@@ -490,8 +475,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(VectorGlobalVar vectorGlobalVar) {
-    String varIdent = vectorGlobalVar.getIdent();
-    Obj varObj = findInCurrentScope(varIdent);
+    var varIdent = vectorGlobalVar.getIdent();
+    var varObj = findInCurrentScope(varIdent);
 
     if (varObj == Tab.noObj) {
       MJTab.insert(Obj.Var, varIdent, new Struct(Struct.Array, currentType));
@@ -502,8 +487,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(VectorField vectorField) {
-    String fieldIdent = vectorField.getIdent();
-    Obj fieldObj = findInCurrentScope(fieldIdent);
+    var fieldIdent = vectorField.getIdent();
+    var fieldObj = findInCurrentScope(fieldIdent);
 
     if (fieldObj == Tab.noObj) {
       currentClassObj.setAdr(currentClassObj.getAdr() + 1);
@@ -516,8 +501,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(VectorLocalVar vectorLocalVar) {
-    String varIdent = vectorLocalVar.getIdent();
-    Obj varObj = findInCurrentScope(varIdent);
+    var varIdent = vectorLocalVar.getIdent();
+    var varObj = findInCurrentScope(varIdent);
 
     if (varObj == Tab.noObj) {
       MJTab.insert(Obj.Var, varIdent, new Struct(Struct.Array, currentType));
@@ -528,9 +513,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(ClassName className) {
-    String classIdent = className.getIdent();
+    var classIdent = className.getIdent();
 
-    Obj classObj = findInCurrentScope(classIdent);
+    var classObj = findInCurrentScope(classIdent);
 
     if (classObj == Tab.noObj) {
       className.obj =
@@ -548,10 +533,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(NonVoidSuperclass nonVoidSuperclass) {
-    Struct superclassType = nonVoidSuperclass.getType().obj.getType();
+    var superclassType = nonVoidSuperclass.getType().obj.getType();
     if (superclassType != MJTab.noType) {
       if (superclassType.getKind() == Struct.Class && superclassType != currentClassObj.getType()) {
-        Obj superclassObj = nonVoidSuperclass.getType().obj;
+        var superclassObj = nonVoidSuperclass.getType().obj;
         try {
           InheritanceTree.addNodeForClass(currentClassObj, superclassObj);
         } catch (WrongObjKindException | WrongStructKindException e) {
@@ -610,9 +595,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
       formParCounter++;
     }
 
-    String scalarFormParIdent = scalarFormPar.getIdent();
+    var scalarFormParIdent = scalarFormPar.getIdent();
 
-    Obj formParObj = findInCurrentScope(scalarFormParIdent);
+    var formParObj = findInCurrentScope(scalarFormParIdent);
 
     if (formParObj == Tab.noObj) {
       formParObj = MJTab.insert(Obj.Var, scalarFormParIdent, scalarFormPar.getType().obj.getType());
@@ -629,9 +614,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
       formParCounter++;
     }
 
-    String vectorFormParIdent = vectorFormPar.getIdent();
+    var vectorFormParIdent = vectorFormPar.getIdent();
 
-    Obj formParObj = findInCurrentScope(vectorFormParIdent);
+    var formParObj = findInCurrentScope(vectorFormParIdent);
 
     if (formParObj == Tab.noObj) {
       formParObj =
@@ -653,12 +638,12 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(MethodName methodName) {
-    String methodIdent = methodName.getIdent();
+    var methodIdent = methodName.getIdent();
 
     currentScopeType =
         (currentScopeType == ScopeType.PROGRAM) ? ScopeType.GLOBAL_METHOD : ScopeType.CLASS_METHOD;
 
-    Obj methodObj = findInCurrentScope(methodIdent);
+    var methodObj = findInCurrentScope(methodIdent);
 
     if (methodObj == Tab.noObj) {
       methodName.obj = MJTab.insert(Obj.Meth, methodIdent, currentMethodReturnType);
@@ -683,7 +668,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(MethodDecl methodDecl) {
-    String methodIdent = methodDecl.getMethodName().getIdent();
+    var methodIdent = methodDecl.getMethodName().getIdent();
 
     if (methodIdent.equals(MAIN) && currentScopeType == ScopeType.GLOBAL_METHOD) {
       if (!(methodDecl.getReturnType() instanceof VoidReturnType)) {
@@ -725,8 +710,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     if (voidMethod) {
       detectSemanticError(null, returnExprStatement, SemanticErrorKind.RET_VAL_FROM_VOID_METHOD);
     } else {
-      Obj exprObj = returnExprStatement.getExpr().obj;
-      Struct exprStruct = exprObj.getType();
+      var exprObj = returnExprStatement.getExpr().obj;
+      var exprStruct = exprObj.getType();
       if (!MJUtils.assignableTo(exprStruct, currentMethodReturnType)) {
         if (!currentMethodReturnType.equals(MJTab.noType)
             && !(currentMethodObj.getName().equals(MAIN)
@@ -767,9 +752,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(AssignmentDesignatorStatement assignmentDesignatorStatement) {
-    Obj exprObj = ((CorrectExpr) assignmentDesignatorStatement.getErrorProneExpr()).getExpr().obj;
-    Struct exprStruct = exprObj.getType();
-    Struct designatorStruct = assignmentDesignatorStatement.getDesignator().obj.getType();
+    var exprObj = ((CorrectExpr) assignmentDesignatorStatement.getErrorProneExpr()).getExpr().obj;
+    var exprStruct = exprObj.getType();
+    var designatorStruct = assignmentDesignatorStatement.getDesignator().obj.getType();
     if (assignmentDesignatorStatement.getDesignator().obj.getKind() == Obj.Con) {
       detectSemanticError(
           assignmentDesignatorStatement.getDesignator().obj,
@@ -794,17 +779,16 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(MethodCallDesignatorStatement methodCallDesignatorStatement) {
-    Obj methodObj = methodCallDesignatorStatement.getDesignator().obj;
+    var methodObj = methodCallDesignatorStatement.getDesignator().obj;
 
-    MethodSignatureGenerator invokedMethodSignatureGenerator = new MethodSignatureGenerator();
+    var invokedMethodSignatureGenerator = new MethodSignatureGenerator();
     methodCallDesignatorStatement.traverseTopDown(invokedMethodSignatureGenerator);
     if (methodObj.getKind() != Obj.Meth) {
-      if (invokedMethodSignatureGenerator.getMethodSignature() instanceof ClassMethodSignature) {
-        ClassMethodSignature classMethodSignature =
-            (ClassMethodSignature) invokedMethodSignatureGenerator.getMethodSignature();
+      if (invokedMethodSignatureGenerator.getMethodSignature()
+          instanceof ClassMethodSignature classMethodSignature) {
         if (classMethodSignature.getThisParameterType() != MJTab.noType
             && classMethodSignature.getThisParameterType().getElemType() != MJTab.noType
-            && !classMethodSignature.containsUndeclaredType()) {
+            && classMethodSignature.allTypesAreKnown()) {
           if (classMethodSignature.getThisParameterType().getKind() != Struct.Class) {
             detectSemanticError(
                 null,
@@ -821,9 +805,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
           }
         }
       } else {
-        GlobalMethodSignature globalMethodSignature =
+        var globalMethodSignature =
             (GlobalMethodSignature) invokedMethodSignatureGenerator.getMethodSignature();
-        if (!globalMethodSignature.containsUndeclaredType()) {
+        if (globalMethodSignature.allTypesAreKnown()) {
           detectSemanticError(
               null,
               methodCallDesignatorStatement,
@@ -843,11 +827,11 @@ public class SemanticAnalyzer extends VisitorAdaptor {
       }
       if (methodSignature != null) {
         if (!methodSignature.isInvokableBy(invokedMethodSignatureGenerator.getMethodSignature())) {
-          Obj overriddenMethodObj =
+          var overriddenMethodObj =
               findNearestDeclaration(
                   invokedMethodSignatureGenerator.getMethodSignature(), thisParameterObjs.pop());
           if (overriddenMethodObj.equals(Tab.noObj)) {
-            if (!invokedMethodSignatureGenerator.getMethodSignature().containsUndeclaredType()) {
+            if (invokedMethodSignatureGenerator.getMethodSignature().allTypesAreKnown()) {
               detectSemanticError(
                   null,
                   methodCallDesignatorStatement,
@@ -869,7 +853,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(IncrDesignatorStatement incrDesignatorStatement) {
-    Struct designatorType = incrDesignatorStatement.getDesignator().obj.getType();
+    var designatorType = incrDesignatorStatement.getDesignator().obj.getType();
     if (!designatorType.equals(MJTab.intType)) {
       if (!designatorType.equals(MJTab.noType)
           && !(designatorType.getKind() == Struct.Array
@@ -888,7 +872,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(DecrDesignatorStatement decrDesignatorStatement) {
-    Struct designatorType = decrDesignatorStatement.getDesignator().obj.getType();
+    var designatorType = decrDesignatorStatement.getDesignator().obj.getType();
     if (!designatorType.equals(MJTab.intType)) {
       if (!designatorType.equals(MJTab.noType)
           && !(designatorType.getKind() == Struct.Array
@@ -931,7 +915,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(ReadStatement readStatement) {
-    Struct designatorType = readStatement.getDesignator().obj.getType();
+    var designatorType = readStatement.getDesignator().obj.getType();
     if (designatorType.equals(MJTab.BOOL_TYPE)) {
       readBoolMethodIsUsed = true;
     }
@@ -951,7 +935,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(PrintExprStatement printExprStatement) {
-    Struct exprType = printExprStatement.getExpr().obj.getType();
+    var exprType = printExprStatement.getExpr().obj.getType();
     if (exprType.equals(MJTab.BOOL_TYPE)) {
       printBoolMethodIsUsed = true;
     }
@@ -972,7 +956,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(PrintExprIntConstStatement printExprIntConstStatement) {
-    Struct exprType = printExprIntConstStatement.getExpr().obj.getType();
+    var exprType = printExprIntConstStatement.getExpr().obj.getType();
     if (exprType.equals(MJTab.BOOL_TYPE)) {
       printBoolMethodIsUsed = true;
     }
@@ -1003,14 +987,14 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(OrCondition orCondition) {
-    Obj condObj = orCondition.getCondition().obj;
-    Struct condType = condObj.getType();
-    Obj termObj = orCondition.getCondTerm().obj;
-    Struct termType = termObj.getType();
+    var condObj = orCondition.getCondition().obj;
+    var condType = condObj.getType();
+    var termObj = orCondition.getCondTerm().obj;
+    var termType = termObj.getType();
     if (condType.equals(MJTab.BOOL_TYPE) && termType.equals(MJTab.BOOL_TYPE)) {
       orCondition.obj = new Obj(Obj.Var, "", MJTab.BOOL_TYPE);
     } else {
-      String operator = "||";
+      var operator = "||";
       if (detectErrors) {
         detectSemanticError(
             null, orCondition, SemanticErrorKind.UNDEF_OP, condType, termType, operator);
@@ -1027,12 +1011,12 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(AndCondTerm andCondTerm) {
-    Struct termType = andCondTerm.getCondTerm().obj.getType();
-    Struct factorType = andCondTerm.getCondFactor().obj.getType();
+    var termType = andCondTerm.getCondTerm().obj.getType();
+    var factorType = andCondTerm.getCondFactor().obj.getType();
     if (termType.equals(MJTab.BOOL_TYPE) && factorType.equals(MJTab.BOOL_TYPE)) {
       andCondTerm.obj = new Obj(Obj.Var, "", MJTab.BOOL_TYPE);
     } else {
-      String operator = "&&";
+      var operator = "&&";
       if (detectErrors) {
         detectSemanticError(
             null, andCondTerm, SemanticErrorKind.UNDEF_OP, termType, factorType, operator);
@@ -1069,25 +1053,22 @@ public class SemanticAnalyzer extends VisitorAdaptor {
   @Override
   public void visit(RelOpCondFactor relOpCondFactor) {
     relOpCondFactor.obj = new Obj(Obj.Var, "", MJTab.BOOL_TYPE);
-    Obj exprObj = relOpCondFactor.getExpr().obj;
-    Struct exprType = exprObj.getType();
-    Obj expr1Obj = relOpCondFactor.getExpr1().obj;
-    Struct expr1Type = expr1Obj.getType();
+    var exprObj = relOpCondFactor.getExpr().obj;
+    var exprType = exprObj.getType();
+    var expr1Obj = relOpCondFactor.getExpr1().obj;
+    var expr1Type = expr1Obj.getType();
     String operator;
-    Relop relop = relOpCondFactor.getRelop();
-    if (relop instanceof EqRelop) {
-      operator = "==";
-    } else if (relop instanceof NeqRelop) {
-      operator = "!=";
-    } else if (relop instanceof GeqRelop) {
-      operator = ">=";
-    } else if (relop instanceof GtRelop) {
-      operator = ">";
-    } else if (relop instanceof LeqRelop) {
-      operator = "<=";
-    } else {
-      operator = "<";
-    }
+    var relop = relOpCondFactor.getRelop();
+    operator =
+        switch (relop) {
+          case EqRelop unused -> "==";
+          case NeqRelop unused -> "!=";
+          case GeqRelop unused -> ">=";
+          case GtRelop unused -> ">";
+          case LeqRelop unused -> "<=";
+          case null -> "<";
+          default -> "<";
+        };
     if (!exprType.compatibleWith(expr1Type)) {
       if ((exprType != MJTab.noType || exprObj.getKind() == Obj.Meth)
           && (expr1Type != MJTab.noType || expr1Obj.getKind() == Obj.Meth)) {
@@ -1115,7 +1096,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(MinusTermExpr minusTermExpr) {
-    Struct termType = minusTermExpr.getTerm().obj.getType();
+    var termType = minusTermExpr.getTerm().obj.getType();
     if (!termType.equals(MJTab.intType)) {
       minusTermExpr.obj = Tab.noObj;
       if (detectErrors) {
@@ -1129,8 +1110,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(AddopExpr addopExpr) {
-    Struct exprType = addopExpr.getExpr().obj.getType();
-    Struct termType = addopExpr.getTerm().obj.getType();
+    var exprType = addopExpr.getExpr().obj.getType();
+    var termType = addopExpr.getTerm().obj.getType();
     if (exprType.equals(MJTab.intType) && termType.equals(MJTab.intType)) {
       addopExpr.obj = new Obj(Obj.Var, "", MJTab.intType);
     } else if (exprType.equals(MJTab.INT_ARRAY_TYPE) && termType.equals(MJTab.INT_ARRAY_TYPE)) {
@@ -1138,7 +1119,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
       vecPlusVecMethodIsUsed = true;
     } else {
       String operator;
-      Addop addop = addopExpr.getAddop();
+      var addop = addopExpr.getAddop();
       if (addop instanceof PlusAddop) {
         operator = "+";
       } else {
@@ -1163,10 +1144,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(MulopTerm mulopTerm) {
-    Obj termObj = mulopTerm.getTerm().obj;
-    Struct termType = termObj.getType();
-    Obj factorObj = mulopTerm.getFactor().obj;
-    Struct factorType = factorObj.getType();
+    var termObj = mulopTerm.getTerm().obj;
+    var termType = termObj.getType();
+    var factorObj = mulopTerm.getFactor().obj;
+    var factorType = factorObj.getType();
     if (termType.equals(MJTab.intType) && factorType.equals(MJTab.intType)) {
       mulopTerm.obj = new Obj(Obj.Var, "", MJTab.intType);
     } else if (termType.equals(MJTab.INT_ARRAY_TYPE) && factorType.equals(MJTab.INT_ARRAY_TYPE)) {
@@ -1181,7 +1162,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     } else {
       if (factorType != MJTab.noType || factorObj.getKind() == Obj.Meth) {
         String operator;
-        Mulop mulop = mulopTerm.getMulop();
+        var mulop = mulopTerm.getMulop();
         if (mulop instanceof TimesMulop) {
           operator = "*";
         } else if (mulop instanceof DivMulop) {
@@ -1206,17 +1187,16 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(MethodCallFactor methodCallFactor) {
-    Obj methodObj = methodCallFactor.getDesignator().obj;
+    var methodObj = methodCallFactor.getDesignator().obj;
 
-    MethodSignatureGenerator invokedMethodSignatureGenerator = new MethodSignatureGenerator();
+    var invokedMethodSignatureGenerator = new MethodSignatureGenerator();
     methodCallFactor.traverseTopDown(invokedMethodSignatureGenerator);
     if (methodObj.getKind() != Obj.Meth) {
-      if (invokedMethodSignatureGenerator.getMethodSignature() instanceof ClassMethodSignature) {
-        ClassMethodSignature classMethodSignature =
-            (ClassMethodSignature) invokedMethodSignatureGenerator.getMethodSignature();
+      if (invokedMethodSignatureGenerator.getMethodSignature()
+          instanceof ClassMethodSignature classMethodSignature) {
         if (classMethodSignature.getThisParameterType() != MJTab.noType
             && classMethodSignature.getThisParameterType().getElemType() != MJTab.noType
-            && !classMethodSignature.containsUndeclaredType()) {
+            && classMethodSignature.allTypesAreKnown()) {
           if (classMethodSignature.getThisParameterType().getKind() != Struct.Class) {
             detectSemanticError(
                 null,
@@ -1233,9 +1213,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
           }
         }
       } else {
-        GlobalMethodSignature globalMethodSignature =
+        var globalMethodSignature =
             (GlobalMethodSignature) invokedMethodSignatureGenerator.getMethodSignature();
-        if (!globalMethodSignature.containsUndeclaredType()) {
+        if (globalMethodSignature.allTypesAreKnown()) {
           detectSemanticError(
               null,
               methodCallFactor,
@@ -1255,11 +1235,11 @@ public class SemanticAnalyzer extends VisitorAdaptor {
       }
       if (methodSignature != null) {
         if (!methodSignature.isInvokableBy(invokedMethodSignatureGenerator.getMethodSignature())) {
-          Obj overriddenMethodObj =
+          var overriddenMethodObj =
               findNearestDeclaration(
                   invokedMethodSignatureGenerator.getMethodSignature(), thisParameterObjs.pop());
           if (overriddenMethodObj.equals(Tab.noObj)) {
-            if (!invokedMethodSignatureGenerator.getMethodSignature().containsUndeclaredType()) {
+            if (invokedMethodSignatureGenerator.getMethodSignature().allTypesAreKnown()) {
               detectSemanticError(
                   null,
                   methodCallFactor,
@@ -1316,9 +1296,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(IdentDesignator identDesignator) {
-    String identDesignatorIdent = identDesignator.getIdent();
+    var identDesignatorIdent = identDesignator.getIdent();
     Obj identObj;
-    SyntaxNode parent = identDesignator.getParent();
+    var parent = identDesignator.getParent();
 
     if (currentScopeType == ScopeType.CLASS_METHOD) {
       identObj =
@@ -1358,7 +1338,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(ArrayElemAccessDesignator arrayElemAcessDesignator) {
-    Obj array = arrayElemAcessDesignator.getDesignatorStart().obj;
+    var array = arrayElemAcessDesignator.getDesignatorStart().obj;
     if (array.getType().getKind() != Struct.Array) {
       if (!array.getType().equals(MJTab.noType)) {
         detectSemanticError(
@@ -1368,7 +1348,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
       }
       arrayElemAcessDesignator.obj = MJTab.noObj;
     } else {
-      Struct indexType = arrayElemAcessDesignator.getExpr().obj.getType();
+      var indexType = arrayElemAcessDesignator.getExpr().obj.getType();
       if (!indexType.equals(MJTab.intType)) {
         detectSemanticError(
             null,
@@ -1388,10 +1368,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(MemberAccessDesignator memberAccessDesignator) {
-    String memberName = memberAccessDesignator.getIdent();
+    var memberName = memberAccessDesignator.getIdent();
 
-    Obj designatorStartObj = memberAccessDesignator.getDesignatorStart().obj;
-    Obj memberAccessDesignatorObj = new Obj(Obj.NO_VALUE, memberName, MJTab.noType);
+    var designatorStartObj = memberAccessDesignator.getDesignatorStart().obj;
+    var memberAccessDesignatorObj = new Obj(Obj.NO_VALUE, memberName, MJTab.noType);
 
     if (designatorStartObj.getType().getKind() != Struct.Class) {
       if (designatorStartObj.getType() != MJTab.noType
@@ -1413,7 +1393,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
         detectSemanticError(
             memberAccessDesignatorObj, memberAccessDesignator, SemanticErrorKind.UNRESOLVED_MEMBER);
         symbolUsageMJLogger.log(memberAccessDesignatorObj, memberAccessDesignator.getLine(), null);
-        memberAccessDesignator.obj = MJTab.noObj;
       }
     }
 
@@ -1426,7 +1405,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(IdentDesignatorStart identDesignatorStart) {
-    String identDesignatorStartIdent = identDesignatorStart.getIdent();
+    var identDesignatorStartIdent = identDesignatorStart.getIdent();
     Obj identObj;
 
     if (currentScopeType == ScopeType.CLASS_METHOD) {
@@ -1449,7 +1428,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(ArrayElemAccessDesignatorStart arrayElemAcessDesignatorStart) {
-    Obj array = arrayElemAcessDesignatorStart.getDesignatorStart().obj;
+    var array = arrayElemAcessDesignatorStart.getDesignatorStart().obj;
     if (array.getType().getKind() != Struct.Array) {
       if (!array.getType().equals(MJTab.noType)) {
         detectSemanticError(
@@ -1462,7 +1441,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
       }
       arrayElemAcessDesignatorStart.obj = MJTab.noObj;
     } else {
-      Struct indexType = arrayElemAcessDesignatorStart.getExpr().obj.getType();
+      var indexType = arrayElemAcessDesignatorStart.getExpr().obj.getType();
       if (!indexType.equals(MJTab.intType)) {
         detectSemanticError(
             null,
@@ -1482,10 +1461,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(MemberAccessDesignatorStart memberAccessDesignatorStart) {
-    String memberName = memberAccessDesignatorStart.getIdent();
+    var memberName = memberAccessDesignatorStart.getIdent();
 
-    Obj designatorStartObj = memberAccessDesignatorStart.getDesignatorStart().obj;
-    Obj memberAccessDesignatorStartObj = new Obj(Obj.NO_VALUE, memberName, MJTab.noType);
+    var designatorStartObj = memberAccessDesignatorStart.getDesignatorStart().obj;
+    var memberAccessDesignatorStartObj = new Obj(Obj.NO_VALUE, memberName, MJTab.noType);
 
     if (designatorStartObj.getType().getKind() != Struct.Class) {
       if (designatorStartObj.getType() != MJTab.noType
@@ -1511,7 +1490,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
             SemanticErrorKind.UNRESOLVED_MEMBER);
         symbolUsageMJLogger.log(
             memberAccessDesignatorStartObj, memberAccessDesignatorStart.getLine(), null);
-        memberAccessDesignatorStart.obj = MJTab.noObj;
       }
     }
 

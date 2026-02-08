@@ -32,7 +32,7 @@ public final class SymbolUsageMJLogger extends MJLogger<Obj> {
   private final MJDumpSymbolTableVisitor symbolTableVisitor = new MJDumpSymbolTableVisitor(false);
 
   public SymbolUsageMJLogger() {
-    super(MJLoggerKind.INFO_LOGGER, "Symbol usage");
+    super(Type.INFO_LOGGER, "Symbol usage");
   }
 
   @Override
@@ -45,11 +45,11 @@ public final class SymbolUsageMJLogger extends MJLogger<Obj> {
       case Obj.NO_VALUE -> message = "undeclared symbol \"" + obj.getName() + "\"";
       case Obj.Con -> message = "symbolic constant \"" + obj.getName() + "\"";
       case Obj.Var -> {
-        String scalarOrVector = obj.getType().getKind() == Struct.Array ? "vector" : "scalar";
+        var scalarOrVector = obj.getType().getKind() == Struct.Array ? "vector" : "scalar";
         switch (obj.getLevel()) {
           case 0 -> message = "global " + scalarOrVector + " variable \"" + obj.getName() + "\"";
           case 1 -> {
-            boolean thisParameter = obj.getName().equals(SemanticAnalyzer.THIS);
+            var thisParameter = obj.getName().equals(SemanticAnalyzer.THIS);
             if (obj.getAdr() < ((Obj) context[0]).getLevel()) {
               message =
                   (thisParameter ? "implicit " : "")
@@ -64,8 +64,8 @@ public final class SymbolUsageMJLogger extends MJLogger<Obj> {
         }
       }
       case Obj.Meth -> {
-        boolean globalMethod = true;
-        for (Obj formalPar : obj.getLocalSymbols()) {
+        var globalMethod = true;
+        for (var formalPar : obj.getLocalSymbols()) {
           if (formalPar.getName().equals(SemanticAnalyzer.THIS)) {
             globalMethod = false;
             break;
@@ -78,7 +78,7 @@ public final class SymbolUsageMJLogger extends MJLogger<Obj> {
         }
       }
       case Obj.Fld -> {
-        String scalarOrVector = obj.getType().getKind() == Struct.Array ? "vector" : "scalar";
+        var scalarOrVector = obj.getType().getKind() == Struct.Array ? "vector" : "scalar";
         message = scalarOrVector + " inner class field \"" + obj.getName() + "\" access";
       }
       case Obj.Elem -> message = "vector \"" + ((Obj) context[0]).getName() + "\" element access";

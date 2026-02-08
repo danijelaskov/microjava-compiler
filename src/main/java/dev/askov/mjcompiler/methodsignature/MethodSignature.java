@@ -22,7 +22,6 @@ package dev.askov.mjcompiler.methodsignature;
 import dev.askov.mjcompiler.exceptions.WrongObjKindException;
 import dev.askov.mjcompiler.util.MJUtils;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import rs.etf.pp1.symboltable.concepts.Obj;
 import rs.etf.pp1.symboltable.concepts.Struct;
@@ -32,9 +31,7 @@ import rs.etf.pp1.symboltable.concepts.Struct;
  */
 public abstract class MethodSignature {
 
-  private Obj method;
-
-  private String methodName;
+  private final String methodName;
   private final List<Struct> parameters = new ArrayList<>();
   private String compactParameterList = "";
   private String parameterList = "";
@@ -48,14 +45,14 @@ public abstract class MethodSignature {
     containsUndeclaredType = true;
   }
 
-  public boolean containsUndeclaredType() {
-    return containsUndeclaredType;
+  public boolean allTypesAreKnown() {
+    return !containsUndeclaredType;
   }
 
   public void addParameter(Struct parameter) {
     parameters.add(parameter);
     compactParameterList += MJUtils.typeToString(parameter);
-    parameterList += (parameterList.equals("") ? "" : ", ") + MJUtils.typeToString(parameter);
+    parameterList += (parameterList.isEmpty() ? "" : ", ") + MJUtils.typeToString(parameter);
   }
 
   public void addParameter(Obj parameter) {
@@ -66,25 +63,35 @@ public abstract class MethodSignature {
     if (method.getKind() != Obj.Meth) {
       throw new WrongObjKindException();
     }
-    this.method = method;
-    methodName = method.getName();
-    Iterator<Obj> parametersIterator = method.getLocalSymbols().iterator();
-    int parameterCount = method.getLevel();
-    int i = hasThisParameter ? 1 : 0;
-    if (hasThisParameter) {
+
+    this.methodName = method.getName();
+
+    var parametersIterator = method.getLocalSymbols().iterator();
+
+    var compactBuilder = new StringBuilder();
+    var listBuilder = new StringBuilder();
+
+    if (hasThisParameter && parametersIterator.hasNext()) {
       parametersIterator.next();
     }
-    while (i < parameterCount) {
-      Obj currentParameter = parametersIterator.next();
-      this.parameters.add(currentParameter.getType());
-      String parameterType = MJUtils.typeToString(currentParameter.getType());
-      compactParameterList += parameterType;
-      parameterList += parameterType;
-      if (i < parameterCount - 1) {
-        parameterList += ", ";
+
+    while (parametersIterator.hasNext()) {
+      var currentParam = parametersIterator.next();
+      var type = currentParam.getType();
+
+      this.parameters.add(type);
+      var typeName = MJUtils.typeToString(type);
+
+      compactBuilder.append(typeName);
+      listBuilder.append(typeName);
+
+      if (parametersIterator.hasNext()) {
+        listBuilder.append(", ");
       }
-      i++;
     }
+
+    this.compactParameterList = compactBuilder.toString();
+    this.parameterList = listBuilder.toString();
   }
 
   @Override
@@ -92,18 +99,17 @@ public abstract class MethodSignature {
     if (super.equals(object)) {
       return true;
     } else {
-      if (!(object instanceof MethodSignature)) {
+      if (!(object instanceof MethodSignature other)) {
         return false;
       } else {
-        MethodSignature other = (MethodSignature) object;
         if (!methodName.equals(other.methodName)) {
           return false;
         } else {
           if (parameters.size() != other.parameters.size()) {
             return false;
           } else {
-            Iterator<Struct> thisParametersIterator = parameters.iterator();
-            Iterator<Struct> otherParametersIterator = other.parameters.iterator();
+            var thisParametersIterator = parameters.iterator();
+            var otherParametersIterator = other.parameters.iterator();
             while (thisParametersIterator.hasNext()) {
               if (!thisParametersIterator.next().equals(otherParametersIterator.next())) {
                 return false;
@@ -123,8 +129,8 @@ public abstract class MethodSignature {
       if (parameters.size() != other.parameters.size()) {
         return false;
       } else {
-        Iterator<Struct> thisParametersIterator = parameters.iterator();
-        Iterator<Struct> otherParametersIterator = other.parameters.iterator();
+        var thisParametersIterator = parameters.iterator();
+        var otherParametersIterator = other.parameters.iterator();
         while (thisParametersIterator.hasNext()) {
           if (!MJUtils.assignableTo(
               otherParametersIterator.next(), thisParametersIterator.next())) {
@@ -134,10 +140,6 @@ public abstract class MethodSignature {
         return true;
       }
     }
-  }
-
-  public Obj getMethod() {
-    return method;
   }
 
   public String getMethodName() {

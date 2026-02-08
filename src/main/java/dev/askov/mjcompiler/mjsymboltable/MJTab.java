@@ -20,7 +20,6 @@
 package dev.askov.mjcompiler.mjsymboltable;
 
 import dev.askov.mjcompiler.inheritancetree.InheritanceTree;
-import dev.askov.mjcompiler.inheritancetree.InheritanceTreeNode;
 import dev.askov.mjcompiler.inheritancetree.visitor.LeafNodeVisitor;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +28,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import rs.etf.pp1.symboltable.Tab;
 import rs.etf.pp1.symboltable.concepts.Obj;
-import rs.etf.pp1.symboltable.concepts.Scope;
 import rs.etf.pp1.symboltable.concepts.Struct;
 
 /**
@@ -142,7 +140,7 @@ public class MJTab extends Tab {
     if (mjSymbolTableVisitor == null) {
       mjSymbolTableVisitor = new MJDumpSymbolTableVisitor(true);
     }
-    for (Scope s = currentScope; s != null; s = s.getOuter()) {
+    for (var s = currentScope; s != null; s = s.getOuter()) {
       s.accept(mjSymbolTableVisitor);
     }
     logger.info("Symbol table:\n" + mjSymbolTableVisitor.getOutput());
@@ -153,7 +151,7 @@ public class MJTab extends Tab {
   }
 
   public static Obj insert(int kind, String name, Struct type) {
-    Obj result = Tab.insert(kind, name, type);
+    var result = Tab.insert(kind, name, type);
     if (kind == Obj.Type && type.getKind() == Struct.Class) {
       CLASS_OBJS.put(type, result);
     }
@@ -169,10 +167,10 @@ public class MJTab extends Tab {
   }
 
   public static List<Obj> getLeafClasses() {
-    LeafNodeVisitor leafNodeListCreator = new LeafNodeVisitor();
+    var leafNodeListCreator = new LeafNodeVisitor();
     InheritanceTree.ROOT_NODE.accept(leafNodeListCreator);
     List<Obj> leafClasses = new ArrayList<>();
-    for (InheritanceTreeNode node : leafNodeListCreator.getLeafNodes()) {
+    for (var node : leafNodeListCreator.getLeafNodes()) {
       leafClasses.add(node.getClss());
     }
     return leafClasses;

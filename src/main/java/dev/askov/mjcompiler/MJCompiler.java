@@ -31,7 +31,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java_cup.runtime.Symbol;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import rs.etf.pp1.mj.runtime.Code;
@@ -57,37 +56,37 @@ public class MJCompiler {
       LOGGER.error("Too few arguments. Usage: MJCompiler <source-file> <obj-file>");
       return;
     }
-    File sourceFile = new File(args[0]);
+    var sourceFile = new File(args[0]);
     if (!sourceFile.exists()) {
       LOGGER.error("Source file \"" + sourceFile.getAbsolutePath() + "\" has not been found!");
       return;
     }
     LOGGER.info("Compiling source file \"" + sourceFile.getAbsolutePath() + "\"...");
-    try (BufferedReader br = new BufferedReader(new FileReader(sourceFile))) {
-      MJLexer lexer = new MJLexer(br);
-      MJParser parser = new MJParser(lexer);
-      Symbol symbol = parser.parse();
+    try (var br = new BufferedReader(new FileReader(sourceFile))) {
+      var lexer = new MJLexer(br);
+      var parser = new MJParser(lexer);
+      var symbol = parser.parse();
 
       if (!parser.lexicalErrorDetected() && !parser.syntaxErrorDetected()) {
         LOGGER.info(
             "No syntax errors have been detected in \"" + sourceFile.getAbsolutePath() + "\"");
 
-        Program program = (Program) symbol.value;
+        var program = (Program) symbol.value;
 
         LOGGER.info("Abstract syntax tree:\n" + program.toString(""));
 
         MJTab.init();
-        SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer();
+        var semanticAnalyzer = new SemanticAnalyzer();
         program.traverseBottomUp(semanticAnalyzer);
 
         tsdump();
 
         if (!semanticAnalyzer.semanticErrorDetected()) {
 
-          VMTCreator vmtCreator = new VMTCreator();
+          var vmtCreator = new VMTCreator();
           InheritanceTree.ROOT_NODE.accept(vmtCreator);
 
-          VMTStartAddressGenerator vmtStartAddressGenerator =
+          var vmtStartAddressGenerator =
               new VMTStartAddressGenerator(semanticAnalyzer.getStaticVarsCount());
           InheritanceTree.ROOT_NODE.accept(vmtStartAddressGenerator);
 
@@ -97,7 +96,7 @@ public class MJCompiler {
           LOGGER.info(
               "No semantic errors have been detected in \"" + sourceFile.getAbsolutePath() + "\"");
 
-          File objFile = new File(args[1]);
+          var objFile = new File(args[1]);
           LOGGER.info("Generating bytecode file \"" + objFile.getAbsolutePath() + "\"...");
           if (objFile.exists()) {
             LOGGER.info("Deleting old bytecode file \"" + objFile.getAbsolutePath() + "\"...");
@@ -109,7 +108,7 @@ public class MJCompiler {
                   "Old bytecode file \"" + objFile.getAbsolutePath() + "\" has not been deleted.");
           }
 
-          CodeGenerator codeGenerator = new CodeGenerator();
+          var codeGenerator = new CodeGenerator();
 
           if (semanticAnalyzer.printBoolMethodIsUsed()) CodeGenerator.generatePrintBoolMethod();
           if (semanticAnalyzer.readBoolMethodIsUsed()) CodeGenerator.generateReadBoolMethod();
@@ -122,7 +121,7 @@ public class MJCompiler {
 
           program.traverseBottomUp(codeGenerator);
 
-          InheritanceTreePrinter inheritanceTreeNodePrinter = new InheritanceTreePrinter();
+          var inheritanceTreeNodePrinter = new InheritanceTreePrinter();
           InheritanceTree.ROOT_NODE.accept(inheritanceTreeNodePrinter);
 
           Code.mainPc = Code.pc;
@@ -130,7 +129,7 @@ public class MJCompiler {
           Code.put(0);
           Code.put(0);
 
-          VMTCodeGenerator vmtCodeGenerator = new VMTCodeGenerator();
+          var vmtCodeGenerator = new VMTCodeGenerator();
           InheritanceTree.ROOT_NODE.accept(vmtCodeGenerator);
 
           Code.put(Code.call);
@@ -143,7 +142,9 @@ public class MJCompiler {
           LOGGER.info(
               "Compilation of source file \""
                   + sourceFile.getAbsolutePath()
-                  + "\" has finished successfully.");
+                  + "\" has finished successfully.\n");
+
+          LOGGER.info("Inheritance tree:\n" + inheritanceTreeNodePrinter.getOutput());
         } else {
           LOGGER.error(
               "Source file \"" + sourceFile.getAbsolutePath() + "\" contains semantic error(s)!");

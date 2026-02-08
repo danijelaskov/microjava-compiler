@@ -46,8 +46,8 @@ public class MJCompilerTest {
         "\n\n2) Running MicroJava Virtual Machine. Input file: \""
             + PATH_PREFIX
             + "simple_calculator.obj\"...\n\n");
-    final InputStream originalInputStream = System.in;
-    final FileInputStream fileInputStream = new FileInputStream(PATH_PREFIX + "input_stream.txt");
+    final var originalInputStream = System.in;
+    final var fileInputStream = new FileInputStream(PATH_PREFIX + "input_stream.txt");
     System.setIn(fileInputStream);
     // Secondly, we start MicroJava Virtual Machine
     Run.main(new String[] {PATH_PREFIX + "simple_calculator.obj"});

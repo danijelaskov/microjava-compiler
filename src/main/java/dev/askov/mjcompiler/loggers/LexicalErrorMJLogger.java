@@ -25,7 +25,7 @@ package dev.askov.mjcompiler.loggers;
 public class LexicalErrorMJLogger extends MJLogger<String> {
 
   public LexicalErrorMJLogger() {
-    super(MJLoggerKind.ERROR_LOGER, "Lexical error");
+    super(Type.ERROR_LOGGER, "Lexical error");
   }
 
   @Override

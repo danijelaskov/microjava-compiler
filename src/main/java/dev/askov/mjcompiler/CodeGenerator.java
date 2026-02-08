@@ -19,67 +19,10 @@
 
 package dev.askov.mjcompiler;
 
-import dev.askov.mjcompiler.ast.ActParsEnd;
-import dev.askov.mjcompiler.ast.AddopExpr;
-import dev.askov.mjcompiler.ast.ArrayElemAccessDesignator;
-import dev.askov.mjcompiler.ast.ArrayElemAccessDesignatorStart;
-import dev.askov.mjcompiler.ast.ArrayElemAcessDesignatorLBracket;
-import dev.askov.mjcompiler.ast.AssignmentDesignatorStatement;
-import dev.askov.mjcompiler.ast.BoolFactor;
-import dev.askov.mjcompiler.ast.BreakStatement;
-import dev.askov.mjcompiler.ast.CharFactor;
-import dev.askov.mjcompiler.ast.ClassDecl;
-import dev.askov.mjcompiler.ast.ClassName;
-import dev.askov.mjcompiler.ast.ConditionEnd;
-import dev.askov.mjcompiler.ast.ConditionStart;
-import dev.askov.mjcompiler.ast.ContinueStatement;
-import dev.askov.mjcompiler.ast.DecrDesignatorStatement;
-import dev.askov.mjcompiler.ast.Designator;
-import dev.askov.mjcompiler.ast.DesignatorFactor;
-import dev.askov.mjcompiler.ast.DivMulop;
-import dev.askov.mjcompiler.ast.DoWhileStatement;
-import dev.askov.mjcompiler.ast.DoWhileStatementStart;
-import dev.askov.mjcompiler.ast.Else;
-import dev.askov.mjcompiler.ast.EqRelop;
-import dev.askov.mjcompiler.ast.ExprCondFactor;
-import dev.askov.mjcompiler.ast.GeqRelop;
-import dev.askov.mjcompiler.ast.GtRelop;
-import dev.askov.mjcompiler.ast.IdentDesignator;
-import dev.askov.mjcompiler.ast.IdentDesignatorStart;
-import dev.askov.mjcompiler.ast.IfThenElseStatement;
-import dev.askov.mjcompiler.ast.IfThenStatement;
-import dev.askov.mjcompiler.ast.IncrDesignatorStatement;
-import dev.askov.mjcompiler.ast.IntFactor;
-import dev.askov.mjcompiler.ast.LeqRelop;
-import dev.askov.mjcompiler.ast.LtRelop;
-import dev.askov.mjcompiler.ast.MemberAccessDesignator;
-import dev.askov.mjcompiler.ast.MemberAccessDesignatorStart;
-import dev.askov.mjcompiler.ast.MethodCallDesignatorStatement;
-import dev.askov.mjcompiler.ast.MethodCallFactor;
-import dev.askov.mjcompiler.ast.MethodDecl;
-import dev.askov.mjcompiler.ast.MethodName;
-import dev.askov.mjcompiler.ast.MinusTermExpr;
-import dev.askov.mjcompiler.ast.Mulop;
-import dev.askov.mjcompiler.ast.MulopTerm;
-import dev.askov.mjcompiler.ast.NeqRelop;
-import dev.askov.mjcompiler.ast.NewScalarFactor;
-import dev.askov.mjcompiler.ast.NewVectorFactor;
-import dev.askov.mjcompiler.ast.OrCondition;
-import dev.askov.mjcompiler.ast.PlusAddop;
-import dev.askov.mjcompiler.ast.PrintExprIntConstStatement;
-import dev.askov.mjcompiler.ast.PrintExprStatement;
-import dev.askov.mjcompiler.ast.ReadStatement;
-import dev.askov.mjcompiler.ast.RelOpCondFactor;
-import dev.askov.mjcompiler.ast.ReturnExprStatement;
-import dev.askov.mjcompiler.ast.ReturnNothingStatement;
-import dev.askov.mjcompiler.ast.SyntaxNode;
-import dev.askov.mjcompiler.ast.TermCondition;
-import dev.askov.mjcompiler.ast.TimesMulop;
-import dev.askov.mjcompiler.ast.VisitorAdaptor;
+import dev.askov.mjcompiler.ast.*;
 import dev.askov.mjcompiler.exceptions.WrongObjKindException;
 import dev.askov.mjcompiler.exceptions.WrongStructKindException;
 import dev.askov.mjcompiler.inheritancetree.InheritanceTree;
-import dev.askov.mjcompiler.inheritancetree.InheritanceTreeNode;
 import dev.askov.mjcompiler.mjsymboltable.MJTab;
 import dev.askov.mjcompiler.util.MJUtils;
 import java.util.ArrayList;
@@ -209,7 +152,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(Code.jcc + Code.ne);
     Code.put2(34);
     // print('t'); print('r'); print('u'); print('e');
-    for (int i = 0; i < MJTab.TRUE.length(); i++) {
+    for (var i = 0; i < MJTab.TRUE.length(); i++) {
       Code.load(new Obj(Obj.Con, "charValue", Tab.charType, MJTab.TRUE.charAt(i), 0));
       Code.load(new Obj(Obj.Con, "width", Tab.intType, 1, 0));
       Code.put(Code.bprint);
@@ -219,7 +162,7 @@ public class CodeGenerator extends VisitorAdaptor {
     // }
     Code.put(Code.jmp);
     Code.put2(38);
-    for (int i = 0; i < MJTab.FALSE.length(); i++) {
+    for (var i = 0; i < MJTab.FALSE.length(); i++) {
       Code.load(new Obj(Obj.Con, "charValue", Tab.charType, MJTab.FALSE.charAt(i), 0));
       Code.load(new Obj(Obj.Con, "width", Tab.intType, 1, 0));
       Code.put(Code.bprint);
@@ -268,44 +211,40 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(Code.enter);
     Code.put(0);
     Code.put(4);
-    // inp = new char[5];
+
     Code.put(Code.const_5);
     Code.put(Code.newarray);
     Code.put(0);
     Code.put(Code.store_n);
-    // i = 0;
+
     Code.put(Code.const_n);
     Code.put(Code.store_1);
-    // do {
-    // do {
-    // if (i < 5) {
+
     Code.put(Code.load_1);
     Code.put(Code.const_5);
     Code.put(Code.jcc + Code.ge);
     Code.put2(14);
-    // read(inp[i]);
+
     Code.put(Code.load_n);
     Code.put(Code.load_1);
     Code.put(Code.bread);
     Code.put(Code.bastore);
-    // skip = inp[i];
+
     Code.put(Code.load_n);
     Code.put(Code.load_1);
     Code.put(Code.baload);
     Code.put(Code.store_2);
     Code.put(Code.jmp);
     Code.put2(5);
-    // } else {
-    // read(skip);
-    // }
+
     Code.put(Code.bread);
     Code.put(Code.store_2);
-    // i++;
+
     Code.put(Code.load_1);
     Code.put(Code.const_1);
     Code.put(Code.add);
     Code.put(Code.store_1);
-    // } while (ord(skip) != 13);
+
     Code.put(Code.load_2);
     Code.put(Code.const_);
     Code.put4(13);
@@ -313,16 +252,12 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put2(6);
     Code.put(Code.jmp);
     Code.put2(-31);
-    // read(skip);
+
     Code.put(Code.bread);
     Code.put(Code.store_2);
-    // if (inp[0] == 't' && inp[1] == 'r' && inp[2] == 'u' && inp[3] == 'e' && i <
-    // 5) {
-    // result = true;
-    // break;
-    // }
-    int skipAddress = 46;
-    for (int i = 0; i < MJTab.TRUE.length(); i++) {
+
+    var skipAddress = 46;
+    for (var i = 0; i < MJTab.TRUE.length(); i++) {
       Code.put(Code.load_n);
       Code.load(new Obj(Obj.Con, "", MJTab.intType, i, 0));
       Code.put(Code.baload);
@@ -339,13 +274,9 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(Code.store_3);
     Code.put(Code.jmp);
     Code.put2(82);
-    // if (inp[0] == 'f' && inp[1] == 'a' && inp[2] == 'l' && inp[3] == 's' &&
-    // inp[4] == 'e' && i < 6) {
-    // result = false;
-    // break;
-    // }
+
     skipAddress = 61;
-    for (int i = 0; i < MJTab.FALSE.length(); i++) {
+    for (var i = 0; i < MJTab.FALSE.length(); i++) {
       Code.put(Code.load_n);
       Code.load(new Obj(Obj.Con, "", MJTab.intType, i, 0));
       Code.put(Code.baload);
@@ -363,17 +294,17 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(Code.store_3);
     Code.put(Code.jmp);
     Code.put2(13);
-    // i = 0;
+
     Code.put(Code.const_n);
     Code.put(Code.store_1);
-    // } while (true);
+
     Code.put(Code.const_1);
     Code.put(Code.const_1);
     Code.put(Code.jcc + Code.ne);
     Code.put2(6);
     Code.put(Code.jmp);
     Code.put2(-166);
-    // return result;
+
     Code.put(Code.load_3);
     Code.put(Code.exit);
     Code.put(Code.return_);
@@ -526,10 +457,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put2(25);
     Code.put(Code.const_n);
     Code.put(Code.store_3);
-    // do {
-    // result[i] = a[i] * s;
-    // i++;
-    // } while (i < la);
+
     Code.put(Code.load);
     Code.put(4);
     Code.put(Code.load_3);
@@ -548,9 +476,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put2(6);
     Code.put(Code.jmp);
     Code.put2(-17);
-    // }
-    // return result[0];
-    // }
+
     Code.put(Code.load);
     Code.put(4);
     Code.put(Code.exit);
@@ -609,10 +535,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put2(25);
     Code.put(Code.const_n);
     Code.put(Code.store_3);
-    // do {
-    // result[i] = a[i] * s;
-    // i++;
-    // } while (i < la);
+
     Code.put(Code.load);
     Code.put(4);
     Code.put(Code.load_3);
@@ -742,10 +665,10 @@ public class CodeGenerator extends VisitorAdaptor {
   public void generateMethodInvocationCode(Obj overriddenMethod) {
     List<Integer> jmpAddresses = new ArrayList<>();
     int jccAddress;
-    List<Obj> leafClasses = MJTab.getLeafClasses();
+    var leafClasses = MJTab.getLeafClasses();
     List<Obj> filteredLeafClasses = new ArrayList<>();
-    for (Obj clss : leafClasses) {
-      for (Obj member : clss.getType().getMembers()) {
+    for (var clss : leafClasses) {
+      for (var member : clss.getType().getMembers()) {
         if (member.getKind() == Obj.Meth) {
           try {
             if (MJUtils.haveSameSignatures(member, overriddenMethod)) {
@@ -757,7 +680,7 @@ public class CodeGenerator extends VisitorAdaptor {
         }
       }
     }
-    for (Obj clss : filteredLeafClasses) {
+    for (var clss : filteredLeafClasses) {
       Code.put(Code.dup);
       Code.put(Code.getfield);
       Code.put2(1);
@@ -768,14 +691,14 @@ public class CodeGenerator extends VisitorAdaptor {
       Code.put(Code.pop);
       Code.put(Code.call);
       try {
-        Obj method =
+        var method =
             InheritanceTree.getNode(clss).getVMT().getSameSignatureMethod(overriddenMethod);
-        int addr = method.getAdr();
+        var addr = method.getAdr();
         if (addr != 0) {
           Code.put2(addr - Code.pc + 1);
         } else {
           if (notYetDeclaredMethod.containsKey(method)) {
-            List<Integer> list = notYetDeclaredMethod.get(method);
+            var list = notYetDeclaredMethod.get(method);
             list.add(Code.pc);
           } else {
             List<Integer> list = new ArrayList<>();
@@ -804,7 +727,7 @@ public class CodeGenerator extends VisitorAdaptor {
       methodSignature = null;
       e.printStackTrace();
     }
-    for (int i = 0; i < (methodSignature != null ? methodSignature.length() : 0); i++) {
+    for (var i = 0; i < (methodSignature != null ? methodSignature.length() : 0); i++) {
       Code.put4(methodSignature.charAt(i));
     }
     Code.put4(-1);
@@ -817,7 +740,7 @@ public class CodeGenerator extends VisitorAdaptor {
 
     @Override
     public void visit(IdentDesignator identDesignator) {
-      int identDesignatorKind = identDesignator.obj.getKind();
+      var identDesignatorKind = identDesignator.obj.getKind();
       Obj obj;
       if (!currentClassObj.equals(Tab.noObj)) {
         obj = new Obj(Obj.Var, SemanticAnalyzer.THIS, currentClassObj.getType(), 0, 1);
@@ -825,8 +748,8 @@ public class CodeGenerator extends VisitorAdaptor {
           Code.load(obj);
         }
         if (identDesignatorKind == Obj.Meth) {
-          Struct superclass = currentClassObj.getType();
-          boolean found = false;
+          var superclass = currentClassObj.getType();
+          var found = false;
           while (superclass != null) {
             if (superclass.getMembersTable().searchKey(identDesignator.obj.getName()) != null) {
               found = true;
@@ -859,10 +782,10 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(MethodName methodName) {
-    Obj methodNameObj = methodName.obj;
+    var methodNameObj = methodName.obj;
     methodNameObj.setAdr(Code.pc);
     if (notYetDeclaredMethod.containsKey(methodNameObj)) {
-      List<Integer> list = notYetDeclaredMethod.get(methodNameObj);
+      var list = notYetDeclaredMethod.get(methodNameObj);
       for (int addr : list) {
         Code.fixup(addr);
       }
@@ -877,7 +800,7 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(MethodDecl methodDecl) {
-    Obj methodNameObj = methodDecl.getMethodName().obj;
+    var methodNameObj = methodDecl.getMethodName().obj;
     if (methodNameObj.getType() == Tab.noType) {
       Code.put(Code.exit);
       Code.put(Code.return_);
@@ -889,19 +812,19 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(ActParsEnd actParsEnd) {
-    Designator methodDesignator =
+    var methodDesignator =
         (actParsEnd.getParent() instanceof MethodCallDesignatorStatement)
             ? ((MethodCallDesignatorStatement) actParsEnd.getParent()).getDesignator()
             : ((MethodCallFactor) actParsEnd.getParent()).getDesignator();
-    int offset = methodDesignator.obj.getAdr() - Code.pc;
-    Obj thisParameterObj = thisParameterObjs.pop();
+    var offset = methodDesignator.obj.getAdr() - Code.pc;
+    var thisParameterObj = thisParameterObjs.pop();
     if (methodDesignator.obj == MJTab.lenMethod) {
       Code.put(Code.arraylength);
     } else if (!(methodDesignator.obj == MJTab.ordMethod
         || methodDesignator.obj == MJTab.chrMethod)) {
       if (!thisParameterObj.equals(Tab.noObj)) {
         try {
-          InheritanceTreeNode thisParameterTypeNode =
+          var thisParameterTypeNode =
               InheritanceTree.getNode((MJTab.findObjForClass(thisParameterObj.getType())));
           if (thisParameterTypeNode.getVMT().containsSameSignatureMethod(methodDesignator.obj)
               && thisParameterTypeNode.hasChildren()) {
@@ -947,14 +870,14 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(ReadStatement readStatement) {
-    Struct designatorType = readStatement.getDesignator().obj.getType();
+    var designatorType = readStatement.getDesignator().obj.getType();
 
     if (designatorType.equals(Tab.charType)) {
       Code.put(Code.bread);
     } else if (designatorType.equals(Tab.intType)) {
       Code.put(Code.read);
     } else {
-      int offset = MJTab.readBoolMethod.getAdr() - Code.pc;
+      var offset = MJTab.readBoolMethod.getAdr() - Code.pc;
       Code.put(Code.call);
       Code.put2(offset);
     }
@@ -963,7 +886,7 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(PrintExprStatement printExprStatement) {
-    Struct exprType = printExprStatement.getExpr().obj.getType();
+    var exprType = printExprStatement.getExpr().obj.getType();
 
     Code.load(new Obj(Obj.Con, "width", Tab.intType, 1, 0));
     if (exprType.equals(Tab.charType)) {
@@ -971,7 +894,7 @@ public class CodeGenerator extends VisitorAdaptor {
     } else if (exprType.equals(Tab.intType)) {
       Code.put(Code.print);
     } else {
-      int offset = MJTab.printBoolMethod.getAdr() - Code.pc;
+      var offset = MJTab.printBoolMethod.getAdr() - Code.pc;
       Code.put(Code.call);
       Code.put2(offset);
     }
@@ -979,7 +902,7 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(PrintExprIntConstStatement printExprIntConstStatement) {
-    Struct exprType = printExprIntConstStatement.getExpr().obj.getType();
+    var exprType = printExprIntConstStatement.getExpr().obj.getType();
 
     Code.load(new Obj(Obj.Con, "width", Tab.intType, printExprIntConstStatement.getIntValue(), 0));
     if (exprType.equals(Tab.charType)) {
@@ -987,7 +910,7 @@ public class CodeGenerator extends VisitorAdaptor {
     } else if (exprType.equals(Tab.intType)) {
       Code.put(Code.print);
     } else {
-      int offset = MJTab.printBoolMethod.getAdr() - Code.pc;
+      var offset = MJTab.printBoolMethod.getAdr() - Code.pc;
       Code.put(Code.call);
       Code.put2(offset);
     }
@@ -995,7 +918,7 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(IncrDesignatorStatement incrDesignatorStatement) {
-    Obj designatorObj = incrDesignatorStatement.getDesignator().obj;
+    var designatorObj = incrDesignatorStatement.getDesignator().obj;
     if (designatorObj.getKind() == Obj.Var && designatorObj.getLevel() == 1) {
       Code.put(Code.inc);
       Code.put(designatorObj.getAdr());
@@ -1021,7 +944,7 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(DecrDesignatorStatement decrDesignatorStatement) {
-    Obj designatorObj = decrDesignatorStatement.getDesignator().obj;
+    var designatorObj = decrDesignatorStatement.getDesignator().obj;
     if (designatorObj.getKind() == Obj.Var && designatorObj.getLevel() == 1) {
       Code.put(Code.inc);
       Code.put(designatorObj.getAdr());
@@ -1071,7 +994,7 @@ public class CodeGenerator extends VisitorAdaptor {
   public void visit(ConditionEnd conditionEnd) {
     if (conditionEnd.getParent() instanceof IfThenStatement
         || conditionEnd.getParent() instanceof IfThenElseStatement) {
-      for (Integer address : currentSkipNextCondTermJumps) {
+      for (var address : currentSkipNextCondTermJumps) {
         Code.fixup(address);
       }
       currentSkipNextCondTermJumps.clear();
@@ -1084,7 +1007,7 @@ public class CodeGenerator extends VisitorAdaptor {
   @Override
   public void visit(Else else_) {
     Code.putJump(0);
-    for (Integer address : currentNextCondTermJumps.pop()) {
+    for (var address : currentNextCondTermJumps.pop()) {
       Code.fixup(address);
     }
     currentSkipElseJump.push(Code.pc - 2);
@@ -1092,7 +1015,7 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(IfThenStatement ifThenStatement) {
-    for (Integer address : currentNextCondTermJumps.pop()) {
+    for (var address : currentNextCondTermJumps.pop()) {
       Code.fixup(address);
     }
   }
@@ -1117,7 +1040,7 @@ public class CodeGenerator extends VisitorAdaptor {
   @Override
   public void visit(ConditionStart conditionStart) {
     if (conditionStart.getParent() instanceof DoWhileStatement) {
-      List<Integer> continuesList = currentContinueJumps.pop();
+      var continuesList = currentContinueJumps.pop();
       for (int address : continuesList) {
         Code.fixup(address);
       }
@@ -1182,16 +1105,16 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(IdentDesignator identDesignator) {
-    int identDesignatorKind = identDesignator.obj.getKind();
-    Obj obj = Tab.noObj;
+    var identDesignatorKind = identDesignator.obj.getKind();
+    var obj = Tab.noObj;
     if (!currentClassObj.equals(Tab.noObj)) {
       obj = new Obj(Obj.Var, SemanticAnalyzer.THIS, currentClassObj.getType(), 0, 1);
       if (identDesignatorKind == Obj.Fld) {
         Code.load(obj);
       }
       if (identDesignatorKind == Obj.Meth) {
-        Struct superclass = currentClassObj.getType();
-        boolean found = false;
+        var superclass = currentClassObj.getType();
+        var found = false;
         while (superclass != null) {
           if (superclass.getMembersTable().searchKey(identDesignator.obj.getName()) != null) {
             found = true;
@@ -1211,7 +1134,7 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(ArrayElemAcessDesignatorLBracket arrAcessDesignatorLBracket) {
-    SyntaxNode parent = arrAcessDesignatorLBracket.getParent();
+    var parent = arrAcessDesignatorLBracket.getParent();
     Code.load(
         (parent instanceof ArrayElemAccessDesignator)
             ? ((ArrayElemAccessDesignator) parent).getDesignatorStart().obj
@@ -1229,9 +1152,9 @@ public class CodeGenerator extends VisitorAdaptor {
   @Override
   public void visit(IdentDesignatorStart identDesignatorStart) {
     if (!currentClassObj.equals(Tab.noObj)) {
-      int identDesignatorStartKind = identDesignatorStart.obj.getKind();
+      var identDesignatorStartKind = identDesignatorStart.obj.getKind();
       if (identDesignatorStartKind == Obj.Fld) {
-        Obj obj = new Obj(Obj.Var, SemanticAnalyzer.THIS, currentClassObj.getType(), 0, 1);
+        var obj = new Obj(Obj.Var, SemanticAnalyzer.THIS, currentClassObj.getType(), 0, 1);
         Code.load(obj);
       }
     }
@@ -1249,11 +1172,11 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(AddopExpr addopExpr) {
-    Struct exprType = addopExpr.obj.getType();
-    Struct termType = addopExpr.obj.getType();
+    var exprType = addopExpr.obj.getType();
+    var termType = addopExpr.obj.getType();
     if (addopExpr.getAddop() instanceof PlusAddop) {
       if (exprType.equals(MJTab.INT_ARRAY_TYPE) && termType.equals(MJTab.INT_ARRAY_TYPE)) {
-        int offset = MJTab.vecPlusVecMethod.getAdr() - Code.pc;
+        var offset = MJTab.vecPlusVecMethod.getAdr() - Code.pc;
         Code.put(Code.call);
         Code.put2(offset);
       } else {
@@ -1266,22 +1189,22 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(MulopTerm mulopTerm) {
-    Mulop mulop = mulopTerm.getMulop();
-    Struct termType = mulopTerm.getTerm().obj.getType();
-    Struct factorType = mulopTerm.getFactor().obj.getType();
+    var mulop = mulopTerm.getMulop();
+    var termType = mulopTerm.getTerm().obj.getType();
+    var factorType = mulopTerm.getFactor().obj.getType();
     if (mulop instanceof TimesMulop) {
       if (termType.equals(MJTab.intType) && factorType.equals(MJTab.intType)) {
         Code.put(Code.mul);
       } else if (termType.equals(MJTab.INT_ARRAY_TYPE) && factorType.equals(MJTab.INT_ARRAY_TYPE)) {
-        int offset = MJTab.vecTimesVecMethod.getAdr() - Code.pc;
+        var offset = MJTab.vecTimesVecMethod.getAdr() - Code.pc;
         Code.put(Code.call);
         Code.put2(offset);
       } else if (termType.equals(MJTab.INT_ARRAY_TYPE) && factorType.equals(MJTab.intType)) {
-        int offset = MJTab.vecTimesScalarMethod.getAdr() - Code.pc;
+        var offset = MJTab.vecTimesScalarMethod.getAdr() - Code.pc;
         Code.put(Code.call);
         Code.put2(offset);
       } else if (termType.equals(MJTab.intType) && factorType.equals(MJTab.INT_ARRAY_TYPE)) {
-        int offset = MJTab.scalarTimesVecMethod.getAdr() - Code.pc;
+        var offset = MJTab.scalarTimesVecMethod.getAdr() - Code.pc;
         Code.put(Code.call);
         Code.put2(offset);
       } else {
@@ -1325,7 +1248,7 @@ public class CodeGenerator extends VisitorAdaptor {
     if (newScalarFactor.getType().obj.getType().getKind() == Struct.Class) {
       try {
         if (!InheritanceTree.getNode(newScalarFactor.obj).getVMT().isEmpty()) {
-          Obj constObj =
+          var constObj =
               new Obj(Obj.Con, "", Tab.intType, newScalarFactor.getType().obj.getAdr(), 1);
           Code.put(Code.dup);
           Code.load(constObj);
@@ -1345,7 +1268,7 @@ public class CodeGenerator extends VisitorAdaptor {
 
   @Override
   public void visit(NewVectorFactor newVectorFactor) {
-    Struct type = newVectorFactor.getType().obj.getType();
+    var type = newVectorFactor.getType().obj.getType();
     Code.put(Code.newarray);
     Code.put(type.getKind() == Struct.Char ? 0 : 1);
   }

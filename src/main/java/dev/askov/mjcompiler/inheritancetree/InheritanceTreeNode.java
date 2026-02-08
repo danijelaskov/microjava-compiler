@@ -78,12 +78,12 @@ public class InheritanceTreeNode {
   }
 
   public boolean hasChildren() {
-    return children.size() != 0;
+    return !children.isEmpty();
   }
 
   public void accept(InheritanceTreeVisitor inheritanceTreeNodeVisitor) {
     inheritanceTreeNodeVisitor.visit(this);
-    for (InheritanceTreeNode child : children) {
+    for (var child : children) {
       child.accept(inheritanceTreeNodeVisitor);
     }
   }

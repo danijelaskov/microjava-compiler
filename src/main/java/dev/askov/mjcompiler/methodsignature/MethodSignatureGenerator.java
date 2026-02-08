@@ -43,14 +43,14 @@ public class MethodSignatureGenerator extends VisitorAdaptor {
 
   public void visit(IdentDesignator identDesignator) {
     if (methodSignature == null) {
-      Obj identDesignatorObj = identDesignator.obj;
+      var identDesignatorObj = identDesignator.obj;
       methodSignature = new GlobalMethodSignature(identDesignatorObj.getName());
     }
   }
 
   public void visit(MemberAccessDesignator memberAccessDesignator) {
     if (methodSignature == null) {
-      Obj identDesignatorObj = memberAccessDesignator.obj;
+      var identDesignatorObj = memberAccessDesignator.obj;
       methodSignature =
           new ClassMethodSignature(
               identDesignatorObj.getName(),

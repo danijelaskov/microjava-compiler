@@ -23,7 +23,6 @@ import dev.askov.mjcompiler.exceptions.WrongObjKindException;
 import dev.askov.mjcompiler.mjsymboltable.MJTab;
 import dev.askov.mjcompiler.util.MJUtils;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import rs.etf.pp1.mj.runtime.Code;
 import rs.etf.pp1.symboltable.concepts.Obj;
@@ -39,19 +38,15 @@ public class VMT {
   public static final int NAME_ADDR_SEPARATOR = -1;
   public static final int TABLE_TERMINATOR = -2;
 
-  public boolean add(Obj method) throws WrongObjKindException {
+  public void add(Obj method) throws WrongObjKindException {
     if (method == null) {
       throw new NullPointerException();
     }
     if (method.getKind() != Obj.Meth) {
       throw new WrongObjKindException();
     }
-    if (methods.contains(method)) {
-      return false;
-    } else {
-      methods.add(method);
+    if (methods.add(method)) {
       size += MJUtils.getCompactClassMethodSignature(method).length() + 2;
-      return true;
     }
   }
 
@@ -68,7 +63,7 @@ public class VMT {
 
   public void generateCreationCode() {
     if (!methods.isEmpty()) {
-      for (Obj method : methods) {
+      for (var method : methods) {
         String methodSignature;
         try {
           methodSignature = MJUtils.getCompactClassMethodSignature(method);
@@ -76,8 +71,8 @@ public class VMT {
           methodSignature = null;
           e.printStackTrace();
         }
-        Integer methodAddress = method.getAdr();
-        for (int i = 0; i < methodSignature.length(); i++) {
+        var methodAddress = method.getAdr();
+        for (var i = 0; i < methodSignature.length(); i++) {
           putInStaticMemoryZone(methodSignature.charAt(i));
         }
         putInStaticMemoryZone(NAME_ADDR_SEPARATOR);
@@ -97,16 +92,26 @@ public class VMT {
 
   @Override
   public String toString() {
-    StringBuilder stringBuilder = new StringBuilder("VMT {\n");
-    int i = 1;
-    Iterator<Obj> iterator = methods.iterator();
+    var stringBuilder = new StringBuilder("VMT {");
+    var i = 1;
+    var iterator = methods.iterator();
+
+    if (iterator.hasNext()) {
+      stringBuilder.append("\n");
+    }
     while (iterator.hasNext()) {
-      Obj method = iterator.next();
-      stringBuilder.append(
-          "(" + i++ + ") " + MJUtils.typeToString(method.getType()) + " " + method.getName() + "(");
-      int formParsNumber = method.getLevel();
-      int currentFormPar = 0;
-      Iterator<Obj> pars = method.getLocalSymbols().iterator();
+      var method = iterator.next();
+      stringBuilder
+          .append("(")
+          .append(i++)
+          .append(") ")
+          .append(MJUtils.typeToString(method.getType()))
+          .append(" ")
+          .append(method.getName())
+          .append("(");
+      var formParsNumber = method.getLevel();
+      var currentFormPar = 0;
+      var pars = method.getLocalSymbols().iterator();
       while (pars.hasNext() && currentFormPar < formParsNumber) {
         stringBuilder.append(MJUtils.typeToString(pars.next().getType()));
         currentFormPar++;
@@ -115,9 +120,9 @@ public class VMT {
         }
       }
       stringBuilder.append(")");
-      stringBuilder.append(" -> " + method.getAdr() + (iterator.hasNext() ? "\n" : ""));
+      stringBuilder.append(" -> ").append(method.getAdr()).append("\n");
     }
-    return stringBuilder + "\n}";
+    return stringBuilder + "}";
   }
 
   public boolean isEmpty() {
@@ -125,7 +130,7 @@ public class VMT {
   }
 
   public boolean containsSameSignatureMethod(Obj overriddenMethod) {
-    for (Obj method : methods) {
+    for (var method : methods) {
       try {
         if (MJUtils.haveSameSignatures(method, overriddenMethod)) {
           return true;
@@ -137,12 +142,8 @@ public class VMT {
     return false;
   }
 
-  public boolean containsMethod(Obj method) {
-    return methods.contains(method);
-  }
-
   public Obj getSameSignatureMethod(Obj overriddenMethod) {
-    for (Obj method : methods) {
+    for (var method : methods) {
       try {
         if (MJUtils.haveSameSignatures(method, overriddenMethod)) {
           return method;

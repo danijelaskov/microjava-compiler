@@ -26,24 +26,24 @@ import org.apache.log4j.Logger;
  */
 public abstract class MJLogger<T> {
 
-  protected enum MJLoggerKind {
+  public enum Type {
     INFO_LOGGER,
-    ERROR_LOGER
+    ERROR_LOGGER
   }
 
   protected final Logger log = Logger.getLogger(getClass());
-  private final MJLoggerKind kind;
+  private final Type type;
   protected final String messageHead;
 
-  public MJLogger(MJLoggerKind kind, String messageHead) {
-    this.kind = kind;
+  public MJLogger(Type type, String messageHead) {
+    this.type = type;
     this.messageHead = messageHead;
   }
 
   protected abstract String messageBody(T loggedObject, Object... context);
 
   public final void log(T loggedObject, Integer line, Integer column, Object... context) {
-    String message =
+    var message =
         String.format("%-14s", this.messageHead)
             + (line != null
                 ? " (line "
@@ -54,9 +54,9 @@ public abstract class MJLogger<T> {
             + ": "
             + this.messageBody(loggedObject, context)
             + ".";
-    switch (this.kind) {
+    switch (this.type) {
       case INFO_LOGGER -> log.info(message);
-      case ERROR_LOGER -> log.error(message);
+      case ERROR_LOGGER -> log.error(message);
     }
   }
 }

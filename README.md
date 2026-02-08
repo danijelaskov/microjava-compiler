@@ -11,8 +11,8 @@ Similarly to Java, MicroJava source files are compiled to **bytecode**, which is
 
 ![Compilation process](.readme/compilation.png)
 
-Full project specification can be found [here](https://1drv.ms/b/s!AuZ7wmWsDfythjkXnkK3T5gJ7NIy) and [here](https://1drv.ms/b/s!AuZ7wmWsDfythjgxu8VErKo9wBa7) (Serbian language only).
-Note that I have used custom directory structure (not the one defined in the specification).
+The project specification can be found [here](https://1drv.ms/b/s!AuZ7wmWsDfythjkXnkK3T5gJ7NIy) and [here](https://1drv.ms/b/s!AuZ7wmWsDfythjgxu8VErKo9wBa7) (Serbian language only).
+This implementation uses a modern, Gradle-based directory structure rather than the ad-hoc structure suggested in the original project specification.
 
 ## Main language features
 

@@ -47,22 +47,20 @@ public class InheritanceTree {
 
   private static final Map<Obj, InheritanceTreeNode> MAP = new HashMap<>();
 
-  public static boolean addNodeForClass(Obj clss)
+  public static void addNodeForClass(Obj clss)
       throws WrongObjKindException, WrongStructKindException {
     if (MAP.containsKey(clss)) {
-      return false;
+      return;
     }
     MAP.put(clss, new InheritanceTreeNode(clss));
-    return true;
   }
 
-  public static boolean addNodeForClass(Obj subclass, Obj superclass)
+  public static void addNodeForClass(Obj subclass, Obj superclass)
       throws WrongObjKindException, WrongStructKindException {
     if (MAP.containsKey(subclass) || !MAP.containsKey(superclass)) {
-      return false;
+      return;
     }
     MAP.put(subclass, new InheritanceTreeNode(subclass, MAP.get(superclass)));
-    return true;
   }
 
   public static InheritanceTreeNode getNode(Obj clss)

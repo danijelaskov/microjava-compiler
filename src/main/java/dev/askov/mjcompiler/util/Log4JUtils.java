@@ -59,9 +59,9 @@ public class Log4JUtils {
     fNameError = fNameError.substring(0, fNameError.lastIndexOf('.'));
     fNameInfo = fNameInfo.substring(0, fNameInfo.lastIndexOf('.'));
 
-    File fAllRenamed = new File(fNameAll + "_" + System.currentTimeMillis() + ".log");
-    File fErrorRenamed = new File(fNameError + "_" + System.currentTimeMillis() + ".log");
-    File fInfoRenamed = new File(fNameInfo + "_" + System.currentTimeMillis() + ".log");
+    var fAllRenamed = new File(fNameAll + "_" + System.currentTimeMillis() + ".log");
+    var fErrorRenamed = new File(fNameError + "_" + System.currentTimeMillis() + ".log");
+    var fInfoRenamed = new File(fNameInfo + "_" + System.currentTimeMillis() + ".log");
 
     fAppenderAll.setFile(fAllRenamed.getAbsolutePath());
     fAppenderAll.activateOptions();

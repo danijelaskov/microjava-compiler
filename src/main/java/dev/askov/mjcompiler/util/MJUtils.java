@@ -83,11 +83,6 @@ public final class MJUtils {
     return new ClassMethodSignature(method, MJTab.noType).getCompactSignature();
   }
 
-  public static String getClassMethodDeclaration(Obj method, Struct clss)
-      throws WrongObjKindException {
-    return typeToString(method.getType()) + " " + new ClassMethodSignature(method, clss);
-  }
-
   public static boolean assignableTo(Struct source, Struct destination) {
     if (!canSubstitute(source, destination)) {
       return source.assignableTo(destination);
@@ -100,7 +95,7 @@ public final class MJUtils {
       if (subclass == superclass) {
         return true;
       }
-      Struct subclass1 = subclass.getElemType();
+      var subclass1 = subclass.getElemType();
       while (subclass1 != null) {
         if (subclass1 == superclass) {
           return true;
@@ -118,8 +113,8 @@ public final class MJUtils {
     if (clss.getKind() != Struct.Class) {
       throw new WrongStructKindException();
     }
-    int numberOfFields = 0;
-    Struct superclass = clss;
+    var numberOfFields = 0;
+    var superclass = clss;
     while (superclass != null) {
       numberOfFields += superclass.getNumberOfFields();
       superclass = superclass.getElemType();

@@ -90,7 +90,7 @@ public class MJDumpSymbolTableVisitor extends DumpSymbolTableVisitor {
       objToVisit.getType().accept(this);
     } else {
       if (objToVisit.getType().getKind() == Struct.Class) {
-        Obj clss = MJTab.findObjForClass(objToVisit.getType());
+        var clss = MJTab.findObjForClass(objToVisit.getType());
         if (clss != null) {
           output.append(clss.getName());
         }
@@ -113,7 +113,7 @@ public class MJDumpSymbolTableVisitor extends DumpSymbolTableVisitor {
       nextIndentationLevel();
     }
 
-    for (Obj o : objToVisit.getLocalSymbols()) {
+    for (var o : objToVisit.getLocalSymbols()) {
       o.accept(this);
     }
 
@@ -179,7 +179,7 @@ public class MJDumpSymbolTableVisitor extends DumpSymbolTableVisitor {
       }
       case Struct.Class -> {
         output.append("Class [");
-        for (Obj obj : structToVisit.getMembers()) {
+        for (var obj : structToVisit.getMembers()) {
           obj.accept(this);
         }
         output.append("]");
@@ -190,7 +190,7 @@ public class MJDumpSymbolTableVisitor extends DumpSymbolTableVisitor {
 
   @Override
   public void visitScopeNode(Scope scope) {
-    for (Obj o : scope.values()) {
+    for (var o : scope.values()) {
       o.accept(this);
     }
   }

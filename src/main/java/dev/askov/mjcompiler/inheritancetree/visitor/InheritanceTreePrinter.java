@@ -27,12 +27,12 @@ public class InheritanceTreePrinter implements InheritanceTreeVisitor {
 
   @Override
   public void visit(InheritanceTreeNode node) {
-    stringBuilder.append(
-        "InheritanceTreeNode ("
-            + node.getClss().getName()
-            + (node.getParent() != null ? " extends " + node.getParent().getClss().getName() : "")
-            + ") : ");
-    stringBuilder.append(node.getVMT() + "\n");
+    stringBuilder
+        .append("InheritanceTreeNode (")
+        .append(node.getClss().getName())
+        .append(node.getParent() != null ? " extends " + node.getParent().getClss().getName() : "")
+        .append(") : ");
+    stringBuilder.append(node.getVMT()).append("\n");
   }
 
   public String getOutput() {

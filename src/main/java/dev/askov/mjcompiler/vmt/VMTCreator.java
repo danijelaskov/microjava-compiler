@@ -37,9 +37,9 @@ public class VMTCreator implements InheritanceTreeVisitor {
     } catch (WrongObjKindException e) {
       e.printStackTrace();
     }
-    for (InheritanceTreeNode child : node.getChildren()) {
-      boolean childVisited = false;
-      for (Obj member : child.getClss().getType().getMembers()) {
+    for (var child : node.getChildren()) {
+      var childVisited = false;
+      for (var member : child.getClss().getType().getMembers()) {
         if (member.getKind() == Obj.Meth) {
           try {
             if (MJUtils.haveSameSignatures(member, overriddenMethod)) {
@@ -61,12 +61,12 @@ public class VMTCreator implements InheritanceTreeVisitor {
   @Override
   public void visit(InheritanceTreeNode node) {
     if (!node.equals(InheritanceTree.ROOT_NODE)) {
-      for (Obj member : node.getClss().getType().getMembers()) {
+      for (var member : node.getClss().getType().getMembers()) {
         if (member.getKind() == Obj.Meth) {
-          InheritanceTreeNode parent = node.getParent();
+          var parent = node.getParent();
           while (!parent.equals(InheritanceTree.ROOT_NODE)) {
-            boolean overridenMethodFound = false;
-            for (Obj parentMember : parent.getClss().getType().getMembers()) {
+            var overridenMethodFound = false;
+            for (var parentMember : parent.getClss().getType().getMembers()) {
               if (parentMember.getKind() == Obj.Meth) {
                 try {
                   if (MJUtils.haveSameSignatures(member, parentMember)) {
