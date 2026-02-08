@@ -7,14 +7,14 @@ on:
       - "src/**"
       - "build.gradle.kts"
       - "gradle/**"
-      - "build.yml"
+      - ".github/workflows/build.yml"
   pull_request:
     branches: [ "master" ]
     paths:
       - "src/**"
       - "build.gradle.kts"
       - "gradle/**"
-      - "build.yml"
+      - ".github/workflows/build.yml"
 
 permissions:
   contents: read
