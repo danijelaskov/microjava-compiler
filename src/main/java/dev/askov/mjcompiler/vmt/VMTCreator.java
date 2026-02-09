@@ -65,13 +65,13 @@ public class VMTCreator implements InheritanceTreeVisitor {
         if (member.getKind() == Obj.Meth) {
           var parent = node.getParent();
           while (!parent.equals(InheritanceTree.ROOT_NODE)) {
-            var overridenMethodFound = false;
+            var overriddenMethodFound = false;
             for (var parentMember : parent.getClss().getType().getMembers()) {
               if (parentMember.getKind() == Obj.Meth) {
                 try {
                   if (MJUtils.haveSameSignatures(member, parentMember)) {
                     if (MJUtils.returnTypesAssignmentCompatible(member, parentMember)) {
-                      overridenMethodFound = true;
+                      overriddenMethodFound = true;
                       updateVMTs(parent, parentMember);
                       break;
                     }
@@ -81,7 +81,7 @@ public class VMTCreator implements InheritanceTreeVisitor {
                 }
               }
             }
-            if (overridenMethodFound) {
+            if (overriddenMethodFound) {
               break;
             }
             parent = parent.getParent();

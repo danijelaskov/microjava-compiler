@@ -95,12 +95,12 @@ public final class MJUtils {
       if (subclass == superclass) {
         return true;
       }
-      var subclass1 = subclass.getElemType();
-      while (subclass1 != null) {
-        if (subclass1 == superclass) {
+      var subclassElemType = subclass.getElemType();
+      while (subclassElemType != null) {
+        if (subclassElemType == superclass) {
           return true;
         }
-        subclass1 = subclass1.getElemType();
+        subclassElemType = subclassElemType.getElemType();
       }
     }
     if (subclass.getKind() == Struct.Array && superclass.getKind() == Struct.Array) {

@@ -158,7 +158,7 @@ nonterminal DoWhileStatementStart DoWhileStatementStart;
 nonterminal rs.etf.pp1.symboltable.concepts.Obj Condition;
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj DesignatorStart;
-nonterminal ArrayElemAcessDesignatorLBracket ArrayElemAcessDesignatorLBracket;
+nonterminal ArrayElemAccessDesignatorLBracket ArrayElemAccessDesignatorLBracket;
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj Term;
 nonterminal Addop Addop;
@@ -401,14 +401,14 @@ Statement             ::= (AssignmentDesignatorStatement) Designator:D1 ASSIGN E
                        |  (DelimitedStatement) LBRACE StatementList:S1 RBRACE:R2 {: RESULT=new DelimitedStatement(S1, R2); RESULT.setLine(S1left); :};                  
                        
 Designator            ::= (IdentDesignator) IDENT:ident {: RESULT=new IdentDesignator(ident); RESULT.setLine(identleft); :}
-                       |  (ArrayElemAccessDesignator) DesignatorStart:D1 ArrayElemAcessDesignatorLBracket:A2 Expr:E3 RBRACKET {: RESULT=new ArrayElemAccessDesignator(D1, A2, E3); RESULT.setLine(D1left); :}
+                       |  (ArrayElemAccessDesignator) DesignatorStart:D1 ArrayElemAccessDesignatorLBracket:A2 Expr:E3 RBRACKET {: RESULT=new ArrayElemAccessDesignator(D1, A2, E3); RESULT.setLine(D1left); :}
                        |  (MemberAccessDesignator) DesignatorStart:D1 DOT IDENT:ident {: RESULT=new MemberAccessDesignator(D1, ident); RESULT.setLine(D1left); :};
                              
 DesignatorStart       ::= (IdentDesignatorStart) IDENT:ident {: RESULT=new IdentDesignatorStart(ident); RESULT.setLine(identleft); :}
-                       |  (ArrayElemAccessDesignatorStart) DesignatorStart:D1 ArrayElemAcessDesignatorLBracket:A2 Expr:E3 RBRACKET {: RESULT=new ArrayElemAccessDesignatorStart(D1, A2, E3); RESULT.setLine(D1left); :}
+                       |  (ArrayElemAccessDesignatorStart) DesignatorStart:D1 ArrayElemAccessDesignatorLBracket:A2 Expr:E3 RBRACKET {: RESULT=new ArrayElemAccessDesignatorStart(D1, A2, E3); RESULT.setLine(D1left); :}
                        |  (MemberAccessDesignatorStart) DesignatorStart:D1 DOT IDENT:ident {: RESULT=new MemberAccessDesignatorStart(D1, ident); RESULT.setLine(D1left); :};
 
-ArrayElemAcessDesignatorLBracket ::= (ArrayElemAcessDesignatorLBracket) LBRACKET {: RESULT=new ArrayElemAcessDesignatorLBracket(); :};
+ArrayElemAccessDesignatorLBracket ::= (ArrayElemAccessDesignatorLBracket) LBRACKET {: RESULT=new ArrayElemAccessDesignatorLBracket(); :};
 
 Expr                  ::= (TermExpr) Term:T1 {: RESULT=new TermExpr(T1); RESULT.setLine(T1left); :}
                        |  (MinusTermExpr) MINUS Term:T1 {: RESULT=new MinusTermExpr(T1); RESULT.setLine(T1left); :}

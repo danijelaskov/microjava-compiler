@@ -72,8 +72,8 @@ public class CodeGenerator extends VisitorAdaptor {
   }
 
   /**
-   * U <code>rs.etf.pp1.mj.runtime.Code.buf</code> dodaje mašinski kod za MikroJava virtuelnu mašinu
-   * koji bi se dobio prevođenjem sledeće MikroJava funkcije:
+   * Appends the MicroJava Virtual Machine bytecode equivalent of the following function to the
+   * <code>rs.etf.pp1.mj.runtime.Code.buf</code> buffer:
    *
    * <pre>
    *  <b>void</b> printBool (bool b, int width1) int width2; int blank; {
@@ -104,8 +104,6 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(2);
     Code.put(4);
 
-    // if (b) {
-    // width2 = 4;
     Code.put(Code.load_n);
     Code.put(Code.const_n + 1);
     Code.put(Code.jcc + Code.ne);
@@ -114,52 +112,47 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(Code.store_2);
     Code.put(Code.jmp);
     Code.put2(5);
-    // } else { // b == false;
-    // width2 = 5;
-    // }
+
     Code.put(Code.const_5);
     Code.put(Code.store_2);
-    // blank = width1 - width2;
+
     Code.put(Code.load_1);
     Code.put(Code.load_2);
     Code.put(Code.sub);
     Code.put(Code.store_3);
-    // if (blank > 0) {
+
     Code.put(Code.load_3);
     Code.put(Code.const_n);
     Code.put(Code.jcc + Code.le);
     Code.put2(21);
-    // do {
-    // print(' ');
+
     Code.put(Code.const_);
     Code.put4(32);
     Code.put(Code.const_1);
     Code.put(Code.bprint);
-    // blank--;
+
     Code.put(Code.inc);
     Code.put(3);
     Code.put(-1);
-    // } while (blank > 0);
+
     Code.put(Code.load_3);
     Code.put(Code.const_n);
     Code.put(Code.jcc + Code.le);
     Code.put2(6);
     Code.put(Code.jmp);
     Code.put2(-15);
-    // if (b) {
+
     Code.put(Code.load_n);
     Code.put(Code.const_n + 1);
     Code.put(Code.jcc + Code.ne);
     Code.put2(34);
-    // print('t'); print('r'); print('u'); print('e');
+
     for (var i = 0; i < MJTab.TRUE.length(); i++) {
       Code.load(new Obj(Obj.Con, "charValue", Tab.charType, MJTab.TRUE.charAt(i), 0));
       Code.load(new Obj(Obj.Con, "width", Tab.intType, 1, 0));
       Code.put(Code.bprint);
     }
-    // } else { // b == false
-    // print('f'); print('a'); print('l'); print('s'); print('e');
-    // }
+
     Code.put(Code.jmp);
     Code.put2(38);
     for (var i = 0; i < MJTab.FALSE.length(); i++) {
@@ -172,8 +165,8 @@ public class CodeGenerator extends VisitorAdaptor {
   }
 
   /**
-   * U <code>rs.etf.pp1.mj.runtime.Code.buf</code> dodaje mašinski kod za MikroJava virtuelnu mašinu
-   * koji bi se dobio prevođenjem sledeće MikroJava funkcije:
+   * Appends the MicroJava Virtual Machine bytecode equivalent of the following function to the
+   * <code>rs.etf.pp1.mj.runtime.Code.buf</code> buffer:
    *
    * <pre>
    *  bool readBool() char inp[]; int i; char skip; bool result; {
@@ -311,8 +304,8 @@ public class CodeGenerator extends VisitorAdaptor {
   }
 
   /**
-   * U <code>rs.etf.pp1.mj.runtime.Code.buf</code> dodaje mašinski kod za MikroJava virtuelnu mašinu
-   * koji bi se dobio prevođenjem sledeće MikroJava funkcije:
+   * Appends the MicroJava Virtual Machine bytecode equivalent of the following function to the
+   * <code>rs.etf.pp1.mj.runtime.Code.buf</code> buffer:
    *
    * <pre>
    * int vecTimesVec(int a[], int b[]) int la; int i; int result; {
@@ -339,8 +332,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(Code.enter);
     Code.put(2);
     Code.put(5);
-    // if (a != null && b != null) {
-    // la = len(a);
+
     Code.put(Code.load_n);
     Code.put(Code.const_n);
     Code.put(Code.jcc + Code.eq);
@@ -352,8 +344,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(Code.load_n);
     Code.put(Code.arraylength);
     Code.put(Code.store_2);
-    // if (la == len(b)) {
-    // result = 0;
+
     Code.put(Code.load_2);
     Code.put(Code.load_1);
     Code.put(Code.arraylength);
@@ -362,19 +353,14 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(Code.const_n);
     Code.put(Code.store);
     Code.put(4);
-    // if (la > 0) {
-    // i = 0;
+
     Code.put(Code.load_2);
     Code.put(Code.const_n);
     Code.put(Code.jcc + Code.le);
     Code.put2(28);
     Code.put(Code.const_n);
     Code.put(Code.store_3);
-    // do {
-    // result = result + a[i] * b[i];
-    // i++;
-    // } while (i < la);
-    // }
+
     Code.put(Code.load);
     Code.put(4);
     Code.put(Code.load_n);
@@ -396,9 +382,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put2(6);
     Code.put(Code.jmp);
     Code.put2(-20);
-    // return result;
-    // }
-    // }
+
     Code.put(Code.load);
     Code.put(4);
     Code.put(Code.exit);
@@ -408,8 +392,8 @@ public class CodeGenerator extends VisitorAdaptor {
   }
 
   /**
-   * U <code>rs.etf.pp1.mj.runtime.Code.buf</code> dodaje mašinski kod za MikroJava virtuelnu mašinu
-   * koji bi se dobio prevođenjem sledeće MikroJava funkcije:
+   * Appends the MicroJava Virtual Machine bytecode equivalent of the following function to the
+   * <code>rs.etf.pp1.mj.runtime.Code.buf</code> buffer:
    *
    * <pre>
    * int[] vecTimesScalar(int a[], int s) int la; int i; int result[]; {
@@ -434,9 +418,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(Code.enter);
     Code.put(2);
     Code.put(5);
-    // if (a != null) {
-    // la = len(a);
-    // result = new int[la];
+
     Code.put(Code.load_n);
     Code.put(Code.const_n);
     Code.put(Code.jcc + Code.eq);
@@ -449,8 +431,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(1);
     Code.put(Code.store);
     Code.put(4);
-    // if (la > 0) {
-    // i = 0;
+
     Code.put(Code.load_2);
     Code.put(Code.const_n);
     Code.put(Code.jcc + Code.le);
@@ -486,8 +467,8 @@ public class CodeGenerator extends VisitorAdaptor {
   }
 
   /**
-   * U <code>rs.etf.pp1.mj.runtime.Code.buf</code> dodaje mašinski kod za MikroJava virtuelnu mašinu
-   * koji bi se dobio prevođenjem sledeće MikroJava funkcije:
+   * Appends the MicroJava Virtual Machine bytecode equivalent of the following function to the
+   * <code>rs.etf.pp1.mj.runtime.Code.buf</code> buffer:
    *
    * <pre>
    * int[] scalarTimesVec(int s, int a[]) int la; int i; int result[]; {
@@ -512,9 +493,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(Code.enter);
     Code.put(2);
     Code.put(5);
-    // if (a != null) {
-    // la = len(a);
-    // result = new int[la];
+
     Code.put(Code.load_1);
     Code.put(Code.const_n);
     Code.put(Code.jcc + Code.eq);
@@ -527,8 +506,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(1);
     Code.put(Code.store);
     Code.put(4);
-    // if (la > 0) {
-    // i = 0;
+
     Code.put(Code.load_2);
     Code.put(Code.const_n);
     Code.put(Code.jcc + Code.le);
@@ -554,9 +532,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put2(6);
     Code.put(Code.jmp);
     Code.put2(-17);
-    // }
-    // return result[0];
-    // }
+
     Code.put(Code.load);
     Code.put(4);
     Code.put(Code.exit);
@@ -566,8 +542,8 @@ public class CodeGenerator extends VisitorAdaptor {
   }
 
   /**
-   * U <code>rs.etf.pp1.mj.runtime.Code.buf</code> dodaje mašinski kod za MikroJava virtuelnu mašinu
-   * koji bi se dobio prevođenjem sledeće MikroJava funkcije:
+   * Appends the MicroJava Virtual Machine bytecode equivalent of the following function to the
+   * <code>rs.etf.pp1.mj.runtime.Code.buf</code> buffer:
    *
    * <pre>
    * int[] vecPlusVec(int a[], int b[]) int la; int i; int result[]; {
@@ -593,8 +569,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(Code.enter);
     Code.put(2);
     Code.put(5);
-    // if (a != null && b != null) {
-    // la = len(a);
+
     Code.put(Code.load_n);
     Code.put(Code.const_n);
     Code.put(Code.jcc + Code.eq);
@@ -606,8 +581,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(Code.load_n);
     Code.put(Code.arraylength);
     Code.put(Code.store_2);
-    // if (la == len(b)) {
-    // result = new int[la];
+
     Code.put(Code.load_2);
     Code.put(Code.load_1);
     Code.put(Code.arraylength);
@@ -618,19 +592,14 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put(1);
     Code.put(Code.store);
     Code.put(4);
-    // if (la > 0) {
-    // i = 0;
+
     Code.put(Code.load_2);
     Code.put(Code.const_n);
     Code.put(Code.jcc + Code.le);
     Code.put2(27);
     Code.put(Code.const_n);
     Code.put(Code.store_3);
-    // do {
-    // result[i] = a[i] + b[i];
-    // i++;
-    // } while (i < la);
-    // }
+
     Code.put(Code.load);
     Code.put(4);
     Code.put(Code.load_3);
@@ -651,9 +620,7 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put2(6);
     Code.put(Code.jmp);
     Code.put2(-19);
-    // return result;
-    // }
-    // }
+
     Code.put(Code.load);
     Code.put(4);
     Code.put(Code.exit);
@@ -715,7 +682,7 @@ public class CodeGenerator extends VisitorAdaptor {
       Code.put2(0);
       Code.fixup(jccAddress);
     }
-    // methodDesignator.traverseBottomUp(new ThisParameterLoader());
+
     Code.put(Code.getfield);
     Code.put2(0);
 
@@ -928,17 +895,11 @@ public class CodeGenerator extends VisitorAdaptor {
         incrDesignatorStatement.getDesignator().traverseBottomUp(this);
       } else if (incrDesignatorStatement.getDesignator() instanceof MemberAccessDesignator) {
         Code.put(Code.dup);
-        // Napravi repliku pokazivaca na tekuci objekat (sada se na vrhu steka izraza nalaze dva
-        // ovakva pokazivaca, P1 i P2)
       }
       Code.load(designatorObj);
-      // U slucaju da se inkrementira polje objekta, generise se instrukcija getfield koja "pojede"
-      // prvi pokazivac, P1
       Code.put(Code.const_1);
       Code.put(Code.add);
       Code.store(designatorObj);
-      // U slucaju da se inkrementira polje objekta, generise se instrukcija putfield koja "pojede"
-      // drugi pokazivac, P2
     }
   }
 
@@ -954,17 +915,11 @@ public class CodeGenerator extends VisitorAdaptor {
         decrDesignatorStatement.getDesignator().traverseBottomUp(this);
       } else if (decrDesignatorStatement.getDesignator() instanceof MemberAccessDesignator) {
         Code.put(Code.dup);
-        // Napravi repliku pokazivaca na tekuci objekat (sada se na vrhu steka izraza nalaze dva
-        // ovakva pokazivaca, P1 i P2)
       }
       Code.load(designatorObj);
-      // U slucaju da se dekrementira polje objekta, generise se instrukcija getfield koja "pojede"
-      // prvi pokazivac, P1
       Code.put(Code.const_1);
       Code.put(Code.sub);
       Code.store(designatorObj);
-      // U slucaju da se dekrementira polje objekta, generise se instrukcija putfield koja "pojede"
-      // drugi pokazivac, P2
     }
   }
 
@@ -1133,8 +1088,8 @@ public class CodeGenerator extends VisitorAdaptor {
   }
 
   @Override
-  public void visit(ArrayElemAcessDesignatorLBracket arrAcessDesignatorLBracket) {
-    var parent = arrAcessDesignatorLBracket.getParent();
+  public void visit(ArrayElemAccessDesignatorLBracket arrAccessDesignatorLBracket) {
+    var parent = arrAccessDesignatorLBracket.getParent();
     Code.load(
         (parent instanceof ArrayElemAccessDesignator)
             ? ((ArrayElemAccessDesignator) parent).getDesignatorStart().obj

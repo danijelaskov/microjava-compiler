@@ -188,16 +188,12 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
     if (!skipCurrentScope) {
       result = findInCurrentScope(identName);
-      // Prvo treba pogledati listu formalnih parametara (CLASS_METHOD opseg).
     }
 
     if (result == Tab.noObj) {
       result = findInOuterScope(identName);
-      // Zatim treba pogledati do sada deklarisana sopstvena polja klase (CLASS
-      // opseg).
 
       if (result == Tab.noObj) {
-        // Pretrazuju se nasledjena polja
         var superclass = currentClassObj.getType().getElemType();
         Obj foundMethod;
         while (superclass != null) {
@@ -210,8 +206,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
         }
         if (result == Tab.noObj) {
           result = findInSomeOuterScope(identName);
-          // Zatim treba pogledati globalne i predeklarisane simbole (PROGRAM i UNIVERSE
-          // opsezi).
         }
       }
     }
@@ -224,7 +218,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
     SymbolDataStructure targetSymbolDataStructure;
     if (currentClassObj.getType() == instanceObj.getType()) {
-      // Ako se metoda unutar klase poziva nad instancom klase kojoj sama ona pripada
       targetSymbolDataStructure = MJTab.currentScope.getOuter().getLocals();
     } else {
       targetSymbolDataStructure = instanceObj.getType().getMembersTable();
@@ -332,7 +325,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
   public void visit(ProgramName programName) {
     var programIdent = programName.getIdent();
 
-    var progObj = findInCurrentScope(programIdent); // Pretražuje se UNIVERSE opseg.
+    var progObj = findInCurrentScope(programIdent);
 
     if (progObj == Tab.noObj) {
       programName.obj = MJTab.insert(Obj.Prog, programIdent, MJTab.noType);
@@ -348,7 +341,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   @Override
   public void visit(ProgramEnd programEnd) {
-    var mainObj = findInCurrentScope(MAIN); // Pretražuje se PROGRAM opseg.
+    var mainObj = findInCurrentScope(MAIN);
 
     if (mainObj == MJTab.noObj) {
       detectSemanticError(null, programEnd, SemanticErrorKind.MAIN_METHOD_DECL_NOT_FOUND);
@@ -408,7 +401,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     var constantIdent = constant.getIdent();
 
     var constantObj = findInCurrentScope(constantIdent);
-    // Pretražuju se PROGRAM i UNIVERSE opsezi.
 
     if (constantObj == Tab.noObj) {
       constantObj = MJTab.insert(Obj.Con, constant.getIdent(), currentType);
@@ -759,7 +751,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
       detectSemanticError(
           assignmentDesignatorStatement.getDesignator().obj,
           assignmentDesignatorStatement,
-          SemanticErrorKind.ASSIGINING_SYM_CONST);
+          SemanticErrorKind.ASSIGNING_SYM_CONST);
       return;
     }
     if (!MJUtils.assignableTo(exprStruct, designatorStruct)) {

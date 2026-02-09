@@ -47,7 +47,7 @@ public class SemanticErrorMJLogger extends MJLogger<Obj> {
     MAIN_WITH_PARAMS,
     RET_VAL_FROM_VOID_METHOD,
     RETURN_NOT_FOUND,
-    ASSIGINING_SYM_CONST,
+    ASSIGNING_SYM_CONST,
     TYPE_MISMATCH,
     UNDEF_METHOD,
     MISPLACED_BREAK,
@@ -109,7 +109,7 @@ public class SemanticErrorMJLogger extends MJLogger<Obj> {
                   + "\" must return a result of type \""
                   + MJUtils.typeToString(obj.getType())
                   + "\"";
-      case ASSIGINING_SYM_CONST ->
+      case ASSIGNING_SYM_CONST ->
           message = "Symbolic constant \"" + obj.getName() + "\" cannot be assigned";
       case TYPE_MISMATCH ->
           message =
