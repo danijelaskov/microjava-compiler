@@ -122,10 +122,9 @@ tasks.compileJava {
 
 tasks.clean {
     delete(
-        "src/main/java/dev/askov/mjcompiler/MJLexer.java",
-        "src/main/java/dev/askov/mjcompiler/MJParser.java",
-        "src/main/java/dev/askov/mjcompiler/sym.java",
-        "src/main/java/dev/askov/mjcompiler/ast",
+        fileTree("src/main/resources") {
+            include("*_astbuild.cup")
+        },
     )
 }
 
