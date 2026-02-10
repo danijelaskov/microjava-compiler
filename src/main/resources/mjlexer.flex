@@ -60,10 +60,10 @@ Identifier = [a-zA-Z][a-zA-Z0-9_]*
 %%
 
 <YYINITIAL> {
-	// Whitespace characters (Beline)
+	// Whitespace characters
 	{Whitespace}           { /* ignore */ }
 	
-	// Keywords (Ključne reci)
+	// Keywords
 	"program"              { return newSymbol(sym.PROGRAM); }
 	"break"                { return newSymbol(sym.BREAK); }
 	"class"                { return newSymbol(sym.CLASS); }
@@ -80,8 +80,8 @@ Identifier = [a-zA-Z][a-zA-Z0-9_]*
 	"continue"             { return newSymbol(sym.CONTINUE); }
 	"const"                { return newSymbol(sym.CONST); }
 	
-	// Operators (Operatori)
-	// Arithmetic (Aritmetički)
+	// Operators
+	// Arithmetic operatrors
 	"+"                    { return newSymbol(sym.PLUS); }
 	"-"                    { return newSymbol(sym.MINUS); }
 	"*"                    { return newSymbol(sym.TIMES); }
@@ -89,45 +89,44 @@ Identifier = [a-zA-Z][a-zA-Z0-9_]*
 	"%"                    { return newSymbol(sym.MOD); }
 	"++"                   { return newSymbol(sym.INCR); }
 	"--"                   { return newSymbol(sym.DECR); }
-	// Relational (Relacioni)
+	// Relational operatrors
 	"=="                   { return newSymbol(sym.EQ); }
 	"!="                   { return newSymbol(sym.NEQ); }
 	"<"                    { return newSymbol(sym.LT); }
 	"<="                   { return newSymbol(sym.LEQ); }
 	">"                    { return newSymbol(sym.GT); }
 	">="                   { return newSymbol(sym.GEQ); }
-	// Logical (Logički)
+	// Logical operatrors
 	"&&"                   { return newSymbol(sym.AND); }
 	"||"                   { return newSymbol(sym.OR); }
 
-	// Assignment (Dodela vrednosti)
+	// Assignment
 	"="                    { return newSymbol(sym.ASSIGN); }
 	
-	// Separators (Separatori)
+	// Separators
 	";"                    { return newSymbol(sym.SEMI); }
 	","                    { return newSymbol(sym.COMMA); }
 	"."                    { return newSymbol(sym.DOT); }
 	
-	// Delimiters (Delimiteri)
-	"("                    { return newSymbol(sym.LPAREN); } // Parentheses (Oble (male) zagrade).
+	// Delimiters
+	"("                    { return newSymbol(sym.LPAREN); } // Parentheses
 	")"                    { return newSymbol(sym.RPAREN); }
-	"["                    { return newSymbol(sym.LBRACKET); } // (Square) Brackets (Uglaste (srednje) zagrade).
+	"["                    { return newSymbol(sym.LBRACKET); } // (Square) Brackets
 	"]"                    { return newSymbol(sym.RBRACKET); }
-	"{"                    { return newSymbol(sym.LBRACE); } // (Curly) Braces (Vitičaste (velike) zagrade).
+	"{"                    { return newSymbol(sym.LBRACE); } // (Curly) Braces
 	"}"                    { return newSymbol(sym.RBRACE); }
 	
-	// Comments (Komentari)
+	// Comments
 	{Comment}              { /* ignore */ }
 	
-	// Literals (Literali)
+	// Literals
 	{DecIntegerLiteral}    { return newSymbol(sym.INT, new Integer(yytext())); }
 	{BooleanLiteral}       { return newSymbol(sym.BOOL, Boolean.valueOf(yytext())); }  
 	{PrintableCharLiteral} { return newSymbol(sym.CHAR, new Character(yytext().charAt(1))); }
 	
-	// Identifiers (Identifikatori)
+	// Identifiers
 	{Identifier}           { return newSymbol(sym.IDENT, yytext()); }
 	
-	// Lexical error (Leksička greška)
-	// Svi tekst-editori numerisu linije počev od broja 1. Stoga je na yyline dodat broj 1.
+	// Lexical error (all text editors use 1-based indexing for lines, so yyline is incremented by 1)
 	[^]                    { lexicalErrorMJLogger.log(yytext(), yyline + 1, yycolumn + 1); return newSymbol(sym.ERROR); }
 }

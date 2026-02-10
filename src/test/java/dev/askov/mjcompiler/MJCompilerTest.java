@@ -17,9 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.askov.compilerconstruction.mjcompiler;
+package dev.askov.mjcompiler;
 
-import dev.askov.mjcompiler.MJCompiler;
 import java.io.*;
 import org.junit.Test;
 import rs.etf.pp1.mj.runtime.Run;

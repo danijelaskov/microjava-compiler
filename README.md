@@ -102,7 +102,5 @@ Note that, for testing purposes, standard input has been substituted with a file
 You can always run MicroJava Compiler as a standalone application.
 In order to achieve this, you just have to type `gradlew run <source-file-name> <obj-file-name>` (Windows) or `./gradlew run <source-file-name> <obj-file-name>` (macOS and Linux).
 
-## Note to the reader of this README
-
-If you have any question, suggestion or collaboration offer, please feel free to [contact me](mailto:danijel.askov@gmail.com).
-**If you find this repository useful, please consider starring it!**
+---
+**If you find this repository useful, please consider starring it! ⭐**

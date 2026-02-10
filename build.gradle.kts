@@ -63,8 +63,8 @@ tasks.build {
     dependsOn("spotlessCheck")
 }
 
-val jflexDir = layout.buildDirectory.dir("generated/sources/jflex/java/main").get()
-val cupDir = layout.buildDirectory.dir("generated/sources/cup/java/main").get()
+val jflexDir: Directory = layout.buildDirectory.dir("generated/sources/jflex/java/main").get()
+val cupDir: Directory = layout.buildDirectory.dir("generated/sources/cup/java/main").get()
 
 sourceSets.main {
     java.srcDirs(jflexDir, cupDir)

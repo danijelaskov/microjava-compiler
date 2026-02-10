@@ -16,3 +16,6 @@ logs/
 
 # Ignore notes, TO-DO lists, and other temporary files
 .dev/
+
+# Ignore the intermediate CUP grammar file automatically generated for AST construction
+src/main/resources/*_astbuild.cup

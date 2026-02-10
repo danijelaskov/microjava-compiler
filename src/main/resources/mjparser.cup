@@ -87,7 +87,7 @@ scan with {:
 /* ************** NON-TERMINAL SYMBOLS *************** */
 
 /*
- * Neterminalni simboli su navedeni po redosledu pojavljivanja na desnoj strani smena.
+ * Non-terminal symbols are listed in the order of their appearance on the right-hand side of the productions
  */
 nonterminal Program;
 
@@ -177,7 +177,7 @@ nonterminal Relop;
 /* *************** TERMINAL SYMBOLS *************** */
 
 /*
- * Terminalni simboli su navedeni po redosledu pojavljivanja na desnoj strani smena.
+ * Terminal symbols are listed in the order of their appearance on the right-hand side of the productions
  */
 
 terminal    PROGRAM;
@@ -188,7 +188,7 @@ terminal    String IDENT;
 terminal    CONST;
 terminal    SEMI;
 terminal    CLASS;
-terminal    String RBRACE; // Dummy atribut tipa String (videti objašnjenje u PRODUCTIONS delu).
+terminal    String RBRACE; // Dummy String attribute (refer to the explanation in the PRODUCTIONS section)
 
 terminal    COMMA;
 
@@ -204,7 +204,7 @@ terminal    RBRACKET;
 terminal    EXTENDS;
 
 terminal    LPAREN;
-terminal    String RPAREN; // Dummy atribut tipa String (videti objašnjenje u PRODUCTIONS delu).
+terminal    String RPAREN; // Dummy String attribute (refer to the explanation in the PRODUCTIONS section).
 
 terminal    VOID;
 
@@ -212,9 +212,9 @@ terminal    INCR;
 terminal    DECR;
 terminal    IF;
 terminal    WHILE;
-terminal    String BREAK; // Dummy atribut tipa String (videti objašnjenje u PRODUCTIONS delu).
-terminal    String CONTINUE; // Dummy atribut tipa String (videti objašnjenje u PRODUCTIONS delu).
-terminal    String RETURN; // Dummy atribut tipa String (videti objašnjenje u PRODUCTIONS delu).
+terminal    String BREAK; // Dummy String attribute (refer to the explanation in the PRODUCTIONS section).
+terminal    String CONTINUE; // Dummy String attribute (refer to the explanation in the PRODUCTIONS section).
+terminal    String RETURN; // Dummy String attribute (refer to the explanation in the PRODUCTIONS section).
 terminal    READ;
 terminal    PRINT;
 
@@ -254,9 +254,9 @@ precedence left ELSE;
 /* *************** PRODUCTIONS *************** */
 
 /*
- * Smene su navođene u poretku koji odgovara preorder obilasku sintaksnog stabla.
- * Atributi sa nazivom "dummy" uvedeni su, kao što im i ime sugeriše, ne zbog potrebe da se koristi njihova vrednost,
- * već da bi se mogao zapamtiti u odgavarajucem sintaksnom čvoru broj linije, u izvornom fajlu MikroJava programa, koja sadrži odgovarajući neterminal.
+ * Productions follow the preorder traversal of the syntax tree.
+ * 'Dummy' attributes are used solely to store the source line number
+ * for the non-terminal within the syntax node, rather than for their actual values.
  */
 
 Program               ::= (Program) PROGRAM ProgramName DeclList LBRACE MethodDeclList ProgramEnd;
@@ -413,11 +413,11 @@ ArrayElemAccessDesignatorLBracket ::= (ArrayElemAccessDesignatorLBracket) LBRACK
 Expr                  ::= (TermExpr) Term
                        |  (MinusTermExpr) MINUS Term
                        |  (AddopExpr) Expr Addop Term;
-// Leva rekurzija, jer se zahteva da Addop operatori (+ i -) budu levo ascoijativni
+// Left recursion, because Addop operators (+ and -) are required to be left-associative
 
 Term                  ::= (FactorTerm) Factor
                        |  (MulopTerm) Term Mulop Factor;
-// Leva rekurzija, jer se zahteva da Mulop operatori (*, / i %) budu levo asocijativni
+// Left recursion, because Mulop operators (*, / and %) are required to be left-associative
                
 Factor                ::= (DesignatorFactor) Designator
                        |  (MethodCallFactor) Designator ActParsStart ActPars ActParsEnd
