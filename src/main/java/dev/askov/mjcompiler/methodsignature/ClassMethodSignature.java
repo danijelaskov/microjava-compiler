@@ -19,9 +19,9 @@
 
 package dev.askov.mjcompiler.methodsignature;
 
-import dev.askov.mjcompiler.exceptions.WrongObjKindException;
 import dev.askov.mjcompiler.mjsymboltable.MJTab;
 import dev.askov.mjcompiler.util.MJUtils;
+import java.util.Optional;
 import rs.etf.pp1.symboltable.concepts.Obj;
 import rs.etf.pp1.symboltable.concepts.Struct;
 
@@ -32,9 +32,16 @@ public class ClassMethodSignature extends MethodSignature {
 
   private final Struct clss;
 
-  public ClassMethodSignature(Obj method, Struct clss) throws WrongObjKindException {
+  public ClassMethodSignature(Obj method, Struct clss) {
     super(method, true);
     this.clss = clss;
+  }
+
+  public static Optional<ClassMethodSignature> from(Obj method, Struct clss) {
+    if (method == null || method.getKind() != Obj.Meth) {
+      return Optional.empty();
+    }
+    return Optional.of(new ClassMethodSignature(method, clss));
   }
 
   public ClassMethodSignature(String name, Struct clss) {

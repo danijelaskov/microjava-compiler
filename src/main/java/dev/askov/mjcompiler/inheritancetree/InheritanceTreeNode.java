@@ -19,12 +19,11 @@
 
 package dev.askov.mjcompiler.inheritancetree;
 
-import dev.askov.mjcompiler.exceptions.WrongObjKindException;
-import dev.askov.mjcompiler.exceptions.WrongStructKindException;
 import dev.askov.mjcompiler.inheritancetree.visitor.InheritanceTreeVisitor;
 import dev.askov.mjcompiler.vmt.VMT;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import rs.etf.pp1.symboltable.concepts.Obj;
 import rs.etf.pp1.symboltable.concepts.Struct;
 
@@ -39,16 +38,15 @@ public class InheritanceTreeNode {
   private final Obj clss;
   private final VMT vmt = new VMT();
 
-  public InheritanceTreeNode(Obj clss, InheritanceTreeNode parent)
-      throws WrongObjKindException, WrongStructKindException {
-    if (clss == null || clss.getType() == null) {
-      throw new NullPointerException();
-    }
+  public InheritanceTreeNode(Obj clss, InheritanceTreeNode parent) {
+    Objects.requireNonNull(clss, "clss");
+    Objects.requireNonNull(clss.getType(), "clss.getType()");
     if (clss.getKind() != Obj.Type) {
-      throw new WrongObjKindException();
+      throw new IllegalArgumentException("Expected type object, got kind: " + clss.getKind());
     }
     if (clss.getType().getKind() != Struct.Class) {
-      throw new WrongStructKindException();
+      throw new IllegalArgumentException(
+          "Expected class struct, got kind: " + clss.getType().getKind());
     }
     this.parent = parent;
     if (this.parent != null) {
@@ -57,7 +55,7 @@ public class InheritanceTreeNode {
     this.clss = clss;
   }
 
-  public InheritanceTreeNode(Obj clss) throws WrongObjKindException, WrongStructKindException {
+  public InheritanceTreeNode(Obj clss) {
     this(clss, InheritanceTree.ROOT_NODE);
   }
 

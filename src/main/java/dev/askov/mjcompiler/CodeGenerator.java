@@ -20,15 +20,15 @@
 package dev.askov.mjcompiler;
 
 import dev.askov.mjcompiler.ast.*;
-import dev.askov.mjcompiler.exceptions.WrongObjKindException;
-import dev.askov.mjcompiler.exceptions.WrongStructKindException;
 import dev.askov.mjcompiler.inheritancetree.InheritanceTree;
+import dev.askov.mjcompiler.inheritancetree.InheritanceTreeNode;
 import dev.askov.mjcompiler.mjsymboltable.MJTab;
 import dev.askov.mjcompiler.util.MJUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Stack;
 import rs.etf.pp1.mj.runtime.Code;
 import rs.etf.pp1.symboltable.Tab;
@@ -65,7 +65,7 @@ public class CodeGenerator extends VisitorAdaptor {
   private final List<Integer> currentSkipNextCondTermJumps = new ArrayList<>();
   private int currentConditionalJump = 0;
   private final Stack<Obj> thisParameterObjs = new Stack<>();
-  private final Map<Obj, List<Integer>> notYetDeclaredMethod = new HashMap<>();
+  private final Map<Obj, List<Integer>> addressesToPatch = new HashMap<>();
 
   public int getMainPc() {
     return mainPc;
@@ -637,12 +637,8 @@ public class CodeGenerator extends VisitorAdaptor {
     for (var clss : leafClasses) {
       for (var member : clss.getType().getMembers()) {
         if (member.getKind() == Obj.Meth) {
-          try {
-            if (MJUtils.haveSameSignatures(member, overriddenMethod)) {
-              filteredLeafClasses.add(clss);
-            }
-          } catch (WrongObjKindException e) {
-            e.printStackTrace();
+          if (MJUtils.haveSameSignatures(member, overriddenMethod)) {
+            filteredLeafClasses.add(clss);
           }
         }
       }
@@ -657,26 +653,25 @@ public class CodeGenerator extends VisitorAdaptor {
       Code.put2(0);
       Code.put(Code.pop);
       Code.put(Code.call);
-      try {
-        var method =
-            InheritanceTree.getNode(clss).getVMT().getSameSignatureMethod(overriddenMethod);
-        var addr = method.getAdr();
-        if (addr != 0) {
-          Code.put2(addr - Code.pc + 1);
-        } else {
-          if (notYetDeclaredMethod.containsKey(method)) {
-            var list = notYetDeclaredMethod.get(method);
-            list.add(Code.pc);
-          } else {
-            List<Integer> list = new ArrayList<>();
-            list.add(Code.pc);
-            notYetDeclaredMethod.put(method, list);
-          }
-          Code.put2(0);
-        }
-      } catch (WrongObjKindException | WrongStructKindException e) {
-        e.printStackTrace();
-      }
+      InheritanceTree.getNode(clss)
+          .flatMap(node -> node.getVMT().getSameSignatureMethod(overriddenMethod))
+          .ifPresent(
+              method -> {
+                var addr = method.getAdr();
+                if (addr != 0) {
+                  Code.put2(addr - Code.pc + 1);
+                } else {
+                  if (addressesToPatch.containsKey(method)) {
+                    var addressesToPatch = this.addressesToPatch.get(method);
+                    addressesToPatch.add(Code.pc);
+                  } else {
+                    List<Integer> addressesToPatch = new ArrayList<>();
+                    addressesToPatch.add(Code.pc);
+                    this.addressesToPatch.put(method, addressesToPatch);
+                  }
+                  Code.put2(0);
+                }
+              });
       Code.put(Code.jmp);
       jmpAddresses.add(Code.pc);
       Code.put2(0);
@@ -687,16 +682,13 @@ public class CodeGenerator extends VisitorAdaptor {
     Code.put2(0);
 
     Code.put(Code.invokevirtual);
-    String methodSignature;
-    try {
-      methodSignature = MJUtils.getCompactClassMethodSignature(overriddenMethod);
-    } catch (WrongObjKindException e) {
-      methodSignature = null;
-      e.printStackTrace();
-    }
-    for (var i = 0; i < (methodSignature != null ? methodSignature.length() : 0); i++) {
-      Code.put4(methodSignature.charAt(i));
-    }
+    MJUtils.getCompactClassMethodSignature(overriddenMethod)
+        .ifPresent(
+            methodSignature -> {
+              for (var i = 0; i < methodSignature.length(); i++) {
+                Code.put4(methodSignature.charAt(i));
+              }
+            });
     Code.put4(-1);
     for (int address : jmpAddresses) {
       Code.fixup(address);
@@ -751,10 +743,10 @@ public class CodeGenerator extends VisitorAdaptor {
   public void visit(MethodName methodName) {
     var methodNameObj = methodName.obj;
     methodNameObj.setAdr(Code.pc);
-    if (notYetDeclaredMethod.containsKey(methodNameObj)) {
-      var list = notYetDeclaredMethod.get(methodNameObj);
-      for (int addr : list) {
-        Code.fixup(addr);
+    if (addressesToPatch.containsKey(methodNameObj)) {
+      var addressesToPatch = this.addressesToPatch.get(methodNameObj);
+      for (int addressToPatch : addressesToPatch) {
+        Code.fixup(addressToPatch);
       }
     }
     if (methodNameObj.getName().equals(MJTab.MAIN)) {
@@ -790,9 +782,10 @@ public class CodeGenerator extends VisitorAdaptor {
     } else if (!(methodDesignator.obj == MJTab.ordMethod
         || methodDesignator.obj == MJTab.chrMethod)) {
       if (!thisParameterObj.equals(Tab.noObj)) {
-        try {
-          var thisParameterTypeNode =
-              InheritanceTree.getNode((MJTab.findObjForClass(thisParameterObj.getType())));
+        Optional<InheritanceTreeNode> nodeOpt =
+            InheritanceTree.getNode(MJTab.findObjForClass(thisParameterObj.getType()));
+        if (nodeOpt.isPresent()) {
+          var thisParameterTypeNode = nodeOpt.get();
           if (thisParameterTypeNode.getVMT().containsSameSignatureMethod(methodDesignator.obj)
               && thisParameterTypeNode.hasChildren()) {
             methodDesignator.traverseBottomUp(new ThisParameterLoader());
@@ -801,8 +794,9 @@ public class CodeGenerator extends VisitorAdaptor {
             Code.put(Code.call);
             Code.put2(offset);
           }
-        } catch (WrongObjKindException | WrongStructKindException e) {
-          e.printStackTrace();
+        } else {
+          Code.put(Code.call);
+          Code.put2(offset);
         }
       } else {
         Code.put(Code.call);
@@ -1195,29 +1189,25 @@ public class CodeGenerator extends VisitorAdaptor {
   @Override
   public void visit(NewScalarFactor newScalarFactor) {
     Code.put(Code.new_);
-    try {
-      Code.put2(MJUtils.sizeOfClassInstance(newScalarFactor.getType().obj.getType()));
-    } catch (WrongStructKindException e1) {
-      e1.printStackTrace();
-    }
+    MJUtils.sizeOfClassInstance(newScalarFactor.getType().obj.getType()).ifPresent(Code::put2);
     if (newScalarFactor.getType().obj.getType().getKind() == Struct.Class) {
-      try {
-        if (!InheritanceTree.getNode(newScalarFactor.obj).getVMT().isEmpty()) {
-          var constObj =
-              new Obj(Obj.Con, "", Tab.intType, newScalarFactor.getType().obj.getAdr(), 1);
-          Code.put(Code.dup);
-          Code.load(constObj);
-          Code.put(Code.putfield);
-          Code.put2(0);
-          constObj.setAdr(newScalarFactor.getType().obj.getLevel());
-          Code.put(Code.dup);
-          Code.load(constObj);
-          Code.put(Code.putfield);
-          Code.put2(1);
-        }
-      } catch (WrongObjKindException | WrongStructKindException e) {
-        e.printStackTrace();
-      }
+      InheritanceTree.getNode(newScalarFactor.obj)
+          .ifPresent(
+              node -> {
+                if (!node.getVMT().isEmpty()) {
+                  var constObj =
+                      new Obj(Obj.Con, "", Tab.intType, newScalarFactor.getType().obj.getAdr(), 1);
+                  Code.put(Code.dup);
+                  Code.load(constObj);
+                  Code.put(Code.putfield);
+                  Code.put2(0);
+                  constObj.setAdr(newScalarFactor.getType().obj.getLevel());
+                  Code.put(Code.dup);
+                  Code.load(constObj);
+                  Code.put(Code.putfield);
+                  Code.put2(1);
+                }
+              });
     }
   }
 

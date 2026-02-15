@@ -19,7 +19,6 @@
 
 package dev.askov.mjcompiler.vmt;
 
-import dev.askov.mjcompiler.exceptions.WrongObjKindException;
 import dev.askov.mjcompiler.inheritancetree.InheritanceTree;
 import dev.askov.mjcompiler.inheritancetree.InheritanceTreeNode;
 import dev.askov.mjcompiler.inheritancetree.visitor.InheritanceTreeVisitor;
@@ -32,23 +31,15 @@ import rs.etf.pp1.symboltable.concepts.Obj;
 public class VMTCreator implements InheritanceTreeVisitor {
 
   private void updateVMTs(InheritanceTreeNode node, Obj overriddenMethod) {
-    try {
-      node.getVMT().add(overriddenMethod);
-    } catch (WrongObjKindException e) {
-      e.printStackTrace();
-    }
+    node.getVMT().add(overriddenMethod);
     for (var child : node.getChildren()) {
       var childVisited = false;
       for (var member : child.getClss().getType().getMembers()) {
         if (member.getKind() == Obj.Meth) {
-          try {
-            if (MJUtils.haveSameSignatures(member, overriddenMethod)) {
-              updateVMTs(child, member);
-              childVisited = true;
-              break;
-            }
-          } catch (WrongObjKindException e) {
-            e.printStackTrace();
+          if (MJUtils.haveSameSignatures(member, overriddenMethod)) {
+            updateVMTs(child, member);
+            childVisited = true;
+            break;
           }
         }
       }
@@ -68,16 +59,12 @@ public class VMTCreator implements InheritanceTreeVisitor {
             var overriddenMethodFound = false;
             for (var parentMember : parent.getClss().getType().getMembers()) {
               if (parentMember.getKind() == Obj.Meth) {
-                try {
-                  if (MJUtils.haveSameSignatures(member, parentMember)) {
-                    if (MJUtils.returnTypesAssignmentCompatible(member, parentMember)) {
-                      overriddenMethodFound = true;
-                      updateVMTs(parent, parentMember);
-                      break;
-                    }
+                if (MJUtils.haveSameSignatures(member, parentMember)) {
+                  if (MJUtils.returnTypesAssignmentCompatible(member, parentMember)) {
+                    overriddenMethodFound = true;
+                    updateVMTs(parent, parentMember);
+                    break;
                   }
-                } catch (WrongObjKindException e) {
-                  e.printStackTrace();
                 }
               }
             }

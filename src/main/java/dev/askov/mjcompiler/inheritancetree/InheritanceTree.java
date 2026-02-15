@@ -19,10 +19,9 @@
 
 package dev.askov.mjcompiler.inheritancetree;
 
-import dev.askov.mjcompiler.exceptions.WrongObjKindException;
-import dev.askov.mjcompiler.exceptions.WrongStructKindException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import rs.etf.pp1.symboltable.concepts.Obj;
 import rs.etf.pp1.symboltable.concepts.Struct;
 
@@ -34,46 +33,42 @@ public class InheritanceTree {
   public static final InheritanceTreeNode ROOT_NODE;
 
   static {
-    InheritanceTreeNode root = null;
-    try {
-      root =
-          new InheritanceTreeNode(
-              new Obj(Obj.Type, "$RootClassNode", new Struct(Struct.Class)), null);
-    } catch (WrongObjKindException | WrongStructKindException e) {
-      e.printStackTrace();
-    }
-    ROOT_NODE = root;
+    ROOT_NODE =
+        new InheritanceTreeNode(
+            new Obj(Obj.Type, "$RootClassNode", new Struct(Struct.Class)), null);
   }
 
   private static final Map<Obj, InheritanceTreeNode> MAP = new HashMap<>();
 
-  public static void addNodeForClass(Obj clss)
-      throws WrongObjKindException, WrongStructKindException {
+  public static void addNodeForClass(Obj clss) {
+    if (clss == null || clss.getKind() != Obj.Type || clss.getType().getKind() != Struct.Class) {
+      return;
+    }
     if (MAP.containsKey(clss)) {
       return;
     }
     MAP.put(clss, new InheritanceTreeNode(clss));
   }
 
-  public static void addNodeForClass(Obj subclass, Obj superclass)
-      throws WrongObjKindException, WrongStructKindException {
+  public static void addNodeForClass(Obj subclass, Obj superclass) {
+    if (subclass == null
+        || superclass == null
+        || subclass.getKind() != Obj.Type
+        || superclass.getKind() != Obj.Type
+        || subclass.getType().getKind() != Struct.Class
+        || superclass.getType().getKind() != Struct.Class) {
+      return;
+    }
     if (MAP.containsKey(subclass) || !MAP.containsKey(superclass)) {
       return;
     }
     MAP.put(subclass, new InheritanceTreeNode(subclass, MAP.get(superclass)));
   }
 
-  public static InheritanceTreeNode getNode(Obj clss)
-      throws WrongObjKindException, WrongStructKindException {
-    if (clss == null) {
-      throw new NullPointerException();
+  public static Optional<InheritanceTreeNode> getNode(Obj clss) {
+    if (clss == null || clss.getKind() != Obj.Type || clss.getType().getKind() != Struct.Class) {
+      return Optional.empty();
     }
-    if (clss.getKind() != Obj.Type) {
-      throw new WrongObjKindException();
-    }
-    if (clss.getType().getKind() != Struct.Class) {
-      throw new WrongStructKindException();
-    }
-    return MAP.get(clss);
+    return Optional.ofNullable(MAP.get(clss));
   }
 }

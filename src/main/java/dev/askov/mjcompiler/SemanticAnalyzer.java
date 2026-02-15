@@ -99,8 +99,6 @@ import dev.askov.mjcompiler.ast.VisitorAdaptor;
 import dev.askov.mjcompiler.ast.VoidFormPars;
 import dev.askov.mjcompiler.ast.VoidReturnType;
 import dev.askov.mjcompiler.ast.VoidSuperclass;
-import dev.askov.mjcompiler.exceptions.WrongObjKindException;
-import dev.askov.mjcompiler.exceptions.WrongStructKindException;
 import dev.askov.mjcompiler.inheritancetree.InheritanceTree;
 import dev.askov.mjcompiler.loggers.SemanticErrorMJLogger;
 import dev.askov.mjcompiler.loggers.SemanticErrorMJLogger.SemanticErrorKind;
@@ -111,6 +109,7 @@ import dev.askov.mjcompiler.methodsignature.MethodSignature;
 import dev.askov.mjcompiler.methodsignature.MethodSignatureGenerator;
 import dev.askov.mjcompiler.mjsymboltable.MJTab;
 import dev.askov.mjcompiler.util.MJUtils;
+import java.util.Optional;
 import java.util.Stack;
 import rs.etf.pp1.symboltable.Tab;
 import rs.etf.pp1.symboltable.concepts.Obj;
@@ -244,13 +243,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
       while (currentClass != null) {
         var method = currentClass.getMembersTable().searchKey(classMethodSignature.getMethodName());
         if (method != null && method != Tab.noObj && method.getKind() == Obj.Meth) {
-          try {
-            if (new ClassMethodSignature(method, MJTab.noType)
-                .isInvokableBy(classMethodSignature)) {
-              return method;
-            }
-          } catch (WrongObjKindException e) {
-            e.printStackTrace();
+          if (new ClassMethodSignature(method, MJTab.noType).isInvokableBy(classMethodSignature)) {
+            return method;
           }
         }
         currentClass = currentClass.getElemType();
@@ -265,17 +259,13 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     while (clss != null) {
       var overriddenMethod =
           clss.getMembersTable().searchKey(methodDecl.getMethodName().obj.getName());
-      try {
-        if (MJUtils.haveSameSignatures(overridingMethod, overriddenMethod)
-            && !MJUtils.returnTypesAssignmentCompatible(overridingMethod, overriddenMethod)) {
-          detectSemanticError(
-              null,
-              methodDecl,
-              SemanticErrorKind.INCOMPATIBLE_RET_TYPE,
-              new ClassMethodSignature(overriddenMethod, clss));
-        }
-      } catch (WrongObjKindException e) {
-        e.printStackTrace();
+      if (MJUtils.haveSameSignatures(overridingMethod, overriddenMethod)
+          && !MJUtils.returnTypesAssignmentCompatible(overridingMethod, overriddenMethod)) {
+        detectSemanticError(
+            null,
+            methodDecl,
+            SemanticErrorKind.INCOMPATIBLE_RET_TYPE,
+            new ClassMethodSignature(overriddenMethod, clss));
       }
       clss = clss.getElemType();
     }
@@ -529,11 +519,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     if (superclassType != MJTab.noType) {
       if (superclassType.getKind() == Struct.Class && superclassType != currentClassObj.getType()) {
         var superclassObj = nonVoidSuperclass.getType().obj;
-        try {
-          InheritanceTree.addNodeForClass(currentClassObj, superclassObj);
-        } catch (WrongObjKindException | WrongStructKindException e) {
-          e.printStackTrace();
-        }
+        InheritanceTree.addNodeForClass(currentClassObj, superclassObj);
         currentClassObj.setAdr(superclassObj.getAdr());
         currentClassObj.getType().setElementType(superclassType);
       } else {
@@ -549,11 +535,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     MJTab.insert(Obj.Fld, VMT_POINTER, MJTab.intType);
     MJTab.insert(Obj.Fld, CLASS_ID, MJTab.intType);
     currentClassObj.setAdr(1);
-    try {
-      InheritanceTree.addNodeForClass(currentClassObj);
-    } catch (WrongObjKindException | WrongStructKindException e) {
-      e.printStackTrace();
-    }
+    InheritanceTree.addNodeForClass(currentClassObj);
   }
 
   @Override
@@ -808,38 +790,36 @@ public class SemanticAnalyzer extends VisitorAdaptor {
         }
       }
     } else {
-      MethodSignature methodSignature = null;
-      try {
-        if (isGlobalMethod(methodObj)) {
-          methodSignature = new GlobalMethodSignature(methodObj);
-        } else {
-          methodSignature = new ClassMethodSignature(methodObj, thisParameterObjs.peek().getType());
-        }
-      } catch (WrongObjKindException ignored) {
-      }
-      if (methodSignature != null) {
-        if (!methodSignature.isInvokableBy(invokedMethodSignatureGenerator.getMethodSignature())) {
-          var overriddenMethodObj =
-              findNearestDeclaration(
-                  invokedMethodSignatureGenerator.getMethodSignature(), thisParameterObjs.pop());
-          if (overriddenMethodObj.equals(Tab.noObj)) {
-            if (invokedMethodSignatureGenerator.getMethodSignature().allTypesAreKnown()) {
-              detectSemanticError(
-                  null,
-                  methodCallDesignatorStatement,
-                  SemanticErrorKind.INAPPLICABLE_METHOD,
-                  methodSignature.toString(),
-                  invokedMethodSignatureGenerator.getMethodSignature().getParameterList());
-            } else {
-              detectSemanticError();
+      Optional<MethodSignature> methodSignatureOpt =
+          isGlobalMethod(methodObj)
+              ? GlobalMethodSignature.from(methodObj).map(m -> (MethodSignature) m)
+              : ClassMethodSignature.from(methodObj, thisParameterObjs.peek().getType())
+                  .map(m -> (MethodSignature) m);
+      methodSignatureOpt.ifPresentOrElse(
+          methodSignature -> {
+            if (!methodSignature.isInvokableBy(
+                invokedMethodSignatureGenerator.getMethodSignature())) {
+              var overriddenMethodObj =
+                  findNearestDeclaration(
+                      invokedMethodSignatureGenerator.getMethodSignature(),
+                      thisParameterObjs.pop());
+              if (overriddenMethodObj.equals(Tab.noObj)) {
+                if (invokedMethodSignatureGenerator.getMethodSignature().allTypesAreKnown()) {
+                  detectSemanticError(
+                      null,
+                      methodCallDesignatorStatement,
+                      SemanticErrorKind.INAPPLICABLE_METHOD,
+                      methodSignature.toString(),
+                      invokedMethodSignatureGenerator.getMethodSignature().getParameterList());
+                } else {
+                  detectSemanticError();
+                }
+              } else {
+                methodCallDesignatorStatement.getDesignator().obj = overriddenMethodObj;
+              }
             }
-          } else {
-            methodCallDesignatorStatement.getDesignator().obj = overriddenMethodObj;
-          }
-        }
-      } else {
-        detectSemanticError();
-      }
+          },
+          this::detectSemanticError);
     }
   }
 
@@ -1216,16 +1196,13 @@ public class SemanticAnalyzer extends VisitorAdaptor {
         }
       }
     } else {
-      MethodSignature methodSignature = null;
-      try {
-        if (isGlobalMethod(methodObj)) {
-          methodSignature = new GlobalMethodSignature(methodObj);
-        } else {
-          methodSignature = new ClassMethodSignature(methodObj, thisParameterObjs.peek().getType());
-        }
-      } catch (WrongObjKindException ignored) {
-      }
-      if (methodSignature != null) {
+      Optional<MethodSignature> methodSignatureOpt =
+          isGlobalMethod(methodObj)
+              ? GlobalMethodSignature.from(methodObj).map(m -> (MethodSignature) m)
+              : ClassMethodSignature.from(methodObj, thisParameterObjs.peek().getType())
+                  .map(m -> (MethodSignature) m);
+      if (methodSignatureOpt.isPresent()) {
+        var methodSignature = methodSignatureOpt.get();
         if (!methodSignature.isInvokableBy(invokedMethodSignatureGenerator.getMethodSignature())) {
           var overriddenMethodObj =
               findNearestDeclaration(

@@ -19,7 +19,6 @@
 
 package dev.askov.mjcompiler.methodsignature;
 
-import dev.askov.mjcompiler.exceptions.WrongObjKindException;
 import dev.askov.mjcompiler.util.MJUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,9 +58,9 @@ public abstract class MethodSignature {
     addParameter(parameter.getType());
   }
 
-  public MethodSignature(Obj method, boolean hasThisParameter) throws WrongObjKindException {
+  public MethodSignature(Obj method, boolean hasThisParameter) {
     if (method.getKind() != Obj.Meth) {
-      throw new WrongObjKindException();
+      throw new IllegalArgumentException("Expected method object, got kind: " + method.getKind());
     }
 
     this.methodName = method.getName();

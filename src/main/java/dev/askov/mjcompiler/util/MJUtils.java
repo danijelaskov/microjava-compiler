@@ -19,10 +19,10 @@
 
 package dev.askov.mjcompiler.util;
 
-import dev.askov.mjcompiler.exceptions.WrongObjKindException;
-import dev.askov.mjcompiler.exceptions.WrongStructKindException;
 import dev.askov.mjcompiler.methodsignature.ClassMethodSignature;
 import dev.askov.mjcompiler.mjsymboltable.MJTab;
+import java.util.Optional;
+import java.util.OptionalInt;
 import rs.etf.pp1.symboltable.concepts.Obj;
 import rs.etf.pp1.symboltable.concepts.Struct;
 
@@ -33,18 +33,24 @@ public final class MJUtils {
 
   private MJUtils() {}
 
-  public static boolean haveSameSignatures(Obj method1, Obj method2) throws WrongObjKindException {
-    if (method1 == null || method2 == null) {
+  public static boolean haveSameSignatures(Obj method1, Obj method2) {
+    if (method1 == null
+        || method2 == null
+        || method1.getKind() != Obj.Meth
+        || method2.getKind() != Obj.Meth) {
       return false;
     }
     return new ClassMethodSignature(method1, MJTab.noType)
         .equals(new ClassMethodSignature(method2, MJTab.noType));
   }
 
-  public static boolean returnTypesAssignmentCompatible(Obj overridingMethod, Obj overriddenMethod)
-      throws WrongObjKindException {
-    if (overridingMethod.getKind() != Obj.Meth || overriddenMethod.getKind() != Obj.Meth) {
-      throw new WrongObjKindException();
+  public static boolean returnTypesAssignmentCompatible(
+      Obj overridingMethod, Obj overriddenMethod) {
+    if (overridingMethod == null
+        || overriddenMethod == null
+        || overridingMethod.getKind() != Obj.Meth
+        || overriddenMethod.getKind() != Obj.Meth) {
+      return false;
     }
     return assignableTo(overridingMethod.getType(), overriddenMethod.getType());
   }
@@ -79,8 +85,11 @@ public final class MJUtils {
     }
   }
 
-  public static String getCompactClassMethodSignature(Obj method) throws WrongObjKindException {
-    return new ClassMethodSignature(method, MJTab.noType).getCompactSignature();
+  public static Optional<String> getCompactClassMethodSignature(Obj method) {
+    if (method == null || method.getKind() != Obj.Meth) {
+      return Optional.empty();
+    }
+    return Optional.of(new ClassMethodSignature(method, MJTab.noType).getCompactSignature());
   }
 
   public static boolean assignableTo(Struct source, Struct destination) {
@@ -109,9 +118,9 @@ public final class MJUtils {
     return false;
   }
 
-  public static int sizeOfClassInstance(Struct clss) throws WrongStructKindException {
-    if (clss.getKind() != Struct.Class) {
-      throw new WrongStructKindException();
+  public static OptionalInt sizeOfClassInstance(Struct clss) {
+    if (clss == null || clss.getKind() != Struct.Class) {
+      return OptionalInt.empty();
     }
     var numberOfFields = 0;
     var superclass = clss;
@@ -119,7 +128,7 @@ public final class MJUtils {
       numberOfFields += superclass.getNumberOfFields();
       superclass = superclass.getElemType();
     }
-    return numberOfFields * 4;
+    return OptionalInt.of(numberOfFields * 4);
   }
 
   public static boolean isPrimitiveDataType(Struct type) {

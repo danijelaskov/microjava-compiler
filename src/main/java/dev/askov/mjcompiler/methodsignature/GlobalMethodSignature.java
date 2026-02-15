@@ -19,7 +19,7 @@
 
 package dev.askov.mjcompiler.methodsignature;
 
-import dev.askov.mjcompiler.exceptions.WrongObjKindException;
+import java.util.Optional;
 import rs.etf.pp1.symboltable.concepts.Obj;
 
 /**
@@ -27,8 +27,15 @@ import rs.etf.pp1.symboltable.concepts.Obj;
  */
 public class GlobalMethodSignature extends MethodSignature {
 
-  public GlobalMethodSignature(Obj method) throws WrongObjKindException {
+  public GlobalMethodSignature(Obj method) {
     super(method, false);
+  }
+
+  public static Optional<GlobalMethodSignature> from(Obj method) {
+    if (method == null || method.getKind() != Obj.Meth) {
+      return Optional.empty();
+    }
+    return Optional.of(new GlobalMethodSignature(method));
   }
 
   public GlobalMethodSignature(String name) {

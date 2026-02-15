@@ -19,10 +19,10 @@
 
 package dev.askov.mjcompiler.vmt;
 
-import dev.askov.mjcompiler.exceptions.WrongObjKindException;
 import dev.askov.mjcompiler.mjsymboltable.MJTab;
 import dev.askov.mjcompiler.util.MJUtils;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import rs.etf.pp1.mj.runtime.Code;
 import rs.etf.pp1.symboltable.concepts.Obj;
@@ -38,16 +38,15 @@ public class VMT {
   public static final int NAME_ADDR_SEPARATOR = -1;
   public static final int TABLE_TERMINATOR = -2;
 
-  public void add(Obj method) throws WrongObjKindException {
-    if (method == null) {
-      throw new NullPointerException();
-    }
-    if (method.getKind() != Obj.Meth) {
-      throw new WrongObjKindException();
+  public boolean add(Obj method) {
+    if (method == null || method.getKind() != Obj.Meth) {
+      return false;
     }
     if (methods.add(method)) {
-      size += MJUtils.getCompactClassMethodSignature(method).length() + 2;
+      MJUtils.getCompactClassMethodSignature(method).ifPresent(sig -> size += sig.length() + 2);
+      return true;
     }
+    return false;
   }
 
   private final Obj sourceWord = new Obj(Obj.Con, "$currentChar", MJTab.charType);
@@ -64,19 +63,16 @@ public class VMT {
   public void generateCreationCode() {
     if (!methods.isEmpty()) {
       for (var method : methods) {
-        String methodSignature;
-        try {
-          methodSignature = MJUtils.getCompactClassMethodSignature(method);
-        } catch (WrongObjKindException e) {
-          methodSignature = null;
-          e.printStackTrace();
-        }
-        var methodAddress = method.getAdr();
-        for (var i = 0; i < methodSignature.length(); i++) {
-          putInStaticMemoryZone(methodSignature.charAt(i));
-        }
-        putInStaticMemoryZone(NAME_ADDR_SEPARATOR);
-        putInStaticMemoryZone(methodAddress);
+        MJUtils.getCompactClassMethodSignature(method)
+            .ifPresent(
+                methodSignature -> {
+                  var methodAddress = method.getAdr();
+                  for (var i = 0; i < methodSignature.length(); i++) {
+                    putInStaticMemoryZone(methodSignature.charAt(i));
+                  }
+                  putInStaticMemoryZone(NAME_ADDR_SEPARATOR);
+                  putInStaticMemoryZone(methodAddress);
+                });
       }
       putInStaticMemoryZone(TABLE_TERMINATOR);
     }
@@ -131,27 +127,19 @@ public class VMT {
 
   public boolean containsSameSignatureMethod(Obj overriddenMethod) {
     for (var method : methods) {
-      try {
-        if (MJUtils.haveSameSignatures(method, overriddenMethod)) {
-          return true;
-        }
-      } catch (WrongObjKindException e) {
-        e.printStackTrace();
+      if (MJUtils.haveSameSignatures(method, overriddenMethod)) {
+        return true;
       }
     }
     return false;
   }
 
-  public Obj getSameSignatureMethod(Obj overriddenMethod) {
+  public Optional<Obj> getSameSignatureMethod(Obj overriddenMethod) {
     for (var method : methods) {
-      try {
-        if (MJUtils.haveSameSignatures(method, overriddenMethod)) {
-          return method;
-        }
-      } catch (WrongObjKindException e) {
-        e.printStackTrace();
+      if (MJUtils.haveSameSignatures(method, overriddenMethod)) {
+        return Optional.of(method);
       }
     }
-    return null;
+    return Optional.empty();
   }
 }
