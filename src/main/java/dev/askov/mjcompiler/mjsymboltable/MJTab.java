@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import rs.etf.pp1.symboltable.Tab;
 import rs.etf.pp1.symboltable.concepts.Obj;
 import rs.etf.pp1.symboltable.concepts.Struct;
@@ -143,7 +143,7 @@ public class MJTab extends Tab {
     for (var s = currentScope; s != null; s = s.getOuter()) {
       s.accept(mjSymbolTableVisitor);
     }
-    logger.info("Symbol table:\n" + mjSymbolTableVisitor.getOutput());
+    logger.info("Symbol table:\n{}", mjSymbolTableVisitor.getOutput());
   }
 
   public static void dump(Logger logger) {

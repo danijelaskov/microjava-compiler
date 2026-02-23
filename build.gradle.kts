@@ -27,10 +27,13 @@ repositories {
 dependencies {
     testImplementation("junit:junit:4.13.1")
 
+    implementation("org.slf4j:slf4j-api:2.0.17")
+    implementation("org.apache.logging.log4j:log4j-core:2.25.3")
+    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.25.3")
+
     // Using flatDir dependencies (lookup by name only)
     implementation(":JFlex")
     implementation(":cup_v10k")
-    implementation(":log4j-1.2.17")
     implementation(":mj-runtime-1.1")
     implementation(":symboltable")
 }

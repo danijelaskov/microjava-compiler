@@ -19,7 +19,8 @@
 
 package dev.askov.mjcompiler.loggers;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Danijel Askov
@@ -31,7 +32,7 @@ public abstract class MJLogger<T> {
     ERROR_LOGGER
   }
 
-  protected final Logger log = Logger.getLogger(getClass());
+  protected final Logger log = LoggerFactory.getLogger(getClass());
   private final Type type;
   protected final String messageHead;
 
@@ -43,20 +44,16 @@ public abstract class MJLogger<T> {
   protected abstract String messageBody(T loggedObject, Object... context);
 
   public final void log(T loggedObject, Integer line, Integer column, Object... context) {
-    var message =
-        String.format("%-14s", this.messageHead)
-            + (line != null
-                ? " (line "
-                    + String.format("%3d", line)
-                    + (column != null ? ", column " + String.format("%3d", column) : "")
-                    + ")"
-                : "")
-            + ": "
-            + this.messageBody(loggedObject, context)
-            + ".";
+    var head = String.format("%-14s", this.messageHead);
+    var location =
+        line != null
+            ? String.format(
+                " (line %3d%s)", line, column != null ? String.format(", column %3d", column) : "")
+            : "";
+    var body = this.messageBody(loggedObject, context);
     switch (this.type) {
-      case INFO_LOGGER -> log.info(message);
-      case ERROR_LOGGER -> log.error(message);
+      case INFO_LOGGER -> log.info("{}{}: {}.", head, location, body);
+      case ERROR_LOGGER -> log.error("{}{}: {}.", head, location, body);
     }
   }
 }

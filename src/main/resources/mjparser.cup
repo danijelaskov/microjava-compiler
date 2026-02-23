@@ -21,7 +21,6 @@ package dev.askov.mjcompiler;
 
 import java_cup.runtime.*;
 import dev.askov.mjcompiler.ast.*;
-import org.apache.log4j.*;
 import dev.askov.mjcompiler.loggers.SyntaxErrorMJLogger;
 
 parser code {:

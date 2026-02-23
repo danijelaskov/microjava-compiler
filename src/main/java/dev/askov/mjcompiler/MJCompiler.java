@@ -23,7 +23,6 @@ import dev.askov.mjcompiler.ast.Program;
 import dev.askov.mjcompiler.inheritancetree.InheritanceTree;
 import dev.askov.mjcompiler.inheritancetree.visitor.InheritanceTreePrinter;
 import dev.askov.mjcompiler.mjsymboltable.MJTab;
-import dev.askov.mjcompiler.util.Log4JUtils;
 import dev.askov.mjcompiler.vmt.VMTCodeGenerator;
 import dev.askov.mjcompiler.vmt.VMTCreator;
 import dev.askov.mjcompiler.vmt.VMTStartAddressGenerator;
@@ -31,8 +30,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rs.etf.pp1.mj.runtime.Code;
 
 /**
@@ -40,12 +39,7 @@ import rs.etf.pp1.mj.runtime.Code;
  */
 public class MJCompiler {
 
-  static {
-    DOMConfigurator.configure(Log4JUtils.instance().findLoggerConfigFile());
-    Log4JUtils.instance().prepareLogFile(Logger.getRootLogger());
-  }
-
-  private static final Logger LOGGER = Logger.getLogger(MJCompiler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MJCompiler.class);
 
   public static void tsdump() {
     MJTab.dump(LOGGER);
@@ -58,22 +52,21 @@ public class MJCompiler {
     }
     var sourceFile = new File(args[0]);
     if (!sourceFile.exists()) {
-      LOGGER.error("Source file \"" + sourceFile.getAbsolutePath() + "\" has not been found!");
+      LOGGER.error("Source file \"{}\" has not been found!", sourceFile.getAbsolutePath());
       return;
     }
-    LOGGER.info("Compiling source file \"" + sourceFile.getAbsolutePath() + "\"...");
+    LOGGER.info("Compiling source file \"{}\"...", sourceFile.getAbsolutePath());
     try (var br = new BufferedReader(new FileReader(sourceFile))) {
       var lexer = new MJLexer(br);
       var parser = new MJParser(lexer);
       var symbol = parser.parse();
 
       if (!parser.lexicalErrorDetected() && !parser.syntaxErrorDetected()) {
-        LOGGER.info(
-            "No syntax errors have been detected in \"" + sourceFile.getAbsolutePath() + "\"");
+        LOGGER.info("No syntax errors have been detected in \"{}\"", sourceFile.getAbsolutePath());
 
         var program = (Program) symbol.value;
 
-        LOGGER.info("Abstract syntax tree:\n" + program.toString(""));
+        LOGGER.info("Abstract syntax tree:\n{}", program.toString(""));
 
         MJTab.init();
         var semanticAnalyzer = new SemanticAnalyzer();
@@ -94,18 +87,17 @@ public class MJCompiler {
               semanticAnalyzer.getStaticVarsCount() + vmtStartAddressGenerator.getTotalVMTSize();
 
           LOGGER.info(
-              "No semantic errors have been detected in \"" + sourceFile.getAbsolutePath() + "\"");
+              "No semantic errors have been detected in \"{}\"", sourceFile.getAbsolutePath());
 
           var objFile = new File(args[1]);
-          LOGGER.info("Generating bytecode file \"" + objFile.getAbsolutePath() + "\"...");
+          LOGGER.info("Generating bytecode file \"{}\"...", objFile.getAbsolutePath());
           if (objFile.exists()) {
-            LOGGER.info("Deleting old bytecode file \"" + objFile.getAbsolutePath() + "\"...");
+            LOGGER.info("Deleting old bytecode file \"{}\"...", objFile.getAbsolutePath());
             if (objFile.delete())
-              LOGGER.info(
-                  "Old bytecode file \"" + objFile.getAbsolutePath() + "\" has been deleted.");
+              LOGGER.info("Old bytecode file \"{}\" has been deleted.", objFile.getAbsolutePath());
             else
               LOGGER.error(
-                  "Old bytecode file \"" + objFile.getAbsolutePath() + "\" has not been deleted.");
+                  "Old bytecode file \"{}\" has not been deleted.", objFile.getAbsolutePath());
           }
 
           var codeGenerator = new CodeGenerator();
@@ -138,35 +130,32 @@ public class MJCompiler {
           Code.put(Code.return_);
 
           Code.write(new FileOutputStream(objFile));
-          LOGGER.info("Bytecode file \"" + objFile.getAbsolutePath() + "\" has been generated.");
+          LOGGER.info("Bytecode file \"{}\" has been generated.", objFile.getAbsolutePath());
           LOGGER.info(
-              "Compilation of source file \""
-                  + sourceFile.getAbsolutePath()
-                  + "\" has finished successfully.\n");
+              "Compilation of source file \"{}\" has finished successfully.\n",
+              sourceFile.getAbsolutePath());
 
-          LOGGER.info("Inheritance tree:\n" + inheritanceTreeNodePrinter.getOutput());
+          LOGGER.info("Inheritance tree:\n{}", inheritanceTreeNodePrinter.getOutput());
         } else {
           LOGGER.error(
-              "Source file \"" + sourceFile.getAbsolutePath() + "\" contains semantic error(s)!");
+              "Source file \"{}\" contains semantic error(s)!", sourceFile.getAbsolutePath());
           LOGGER.error(
-              "Compilation of source file \""
-                  + sourceFile.getAbsolutePath()
-                  + "\" has finished unsuccessfully.");
+              "Compilation of source file \"{}\" has finished unsuccessfully.",
+              sourceFile.getAbsolutePath());
         }
 
       } else {
         if (parser.lexicalErrorDetected()) {
           LOGGER.error(
-              "Source file \"" + sourceFile.getAbsolutePath() + "\" contains lexical error(s)!");
+              "Source file \"{}\" contains lexical error(s)!", sourceFile.getAbsolutePath());
         }
         if (parser.syntaxErrorDetected()) {
           LOGGER.error(
-              "Source file \"" + sourceFile.getAbsolutePath() + "\" contains syntax error(s)!");
+              "Source file \"{}\" contains syntax error(s)!", sourceFile.getAbsolutePath());
         }
         LOGGER.error(
-            "Compilation of source file \""
-                + sourceFile.getAbsolutePath()
-                + "\" has finished unsuccessfully.");
+            "Compilation of source file \"{}\" has finished unsuccessfully.",
+            sourceFile.getAbsolutePath());
       }
     }
   }
