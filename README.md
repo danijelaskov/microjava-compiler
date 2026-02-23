@@ -6,13 +6,18 @@
 ## Introduction
 
 **MicroJava** is a *high-level programming language*.
-As the name suggests, **MicroJava** is *similar* to **Java** (which you are, probably, already familiar with), but it's *simpler*.
-Similarly to Java, MicroJava source files are compiled to **bytecode**, which is then executed by a **virtual machine** (it's called (as you might have guessed) **MicroJava Virtual Machine**). MicroJava VM is a simple *interpretative emulator* (i.e. it does not have any support for some "fancy" techniques such as, e.g., *Just-In-Time compilation*).
+As the name suggests, **MicroJava** is *similar* to **Java** (which you are, probably, already familiar with), but it's
+*simpler*.
+Similarly to Java, MicroJava source files are compiled to **bytecode**, which is then executed by a **virtual machine**
+(it's called (as you might have guessed) **MicroJava Virtual Machine**). MicroJava VM is a simple
+*interpretative emulator* (i.e. it does not have any support for some "fancy" techniques such as, e.g.,
+*Just-In-Time compilation*).
 
 ![Compilation process](.readme/compilation.png)
 
-The project specification can be found [here](https://1drv.ms/b/s!AuZ7wmWsDfythjkXnkK3T5gJ7NIy) and [here](https://1drv.ms/b/s!AuZ7wmWsDfythjgxu8VErKo9wBa7) (Serbian language only).
-This implementation uses a modern, Gradle-based directory structure rather than the ad-hoc structure suggested in the original project specification.
+This project is based on a university-level compiler construction assignment. However, this implementation has been
+significantly refactored to align with modern industry standards, including a Gradle-based build system, automated
+CI workflow, and a clean, modular directory structure.
 
 ## Main language features
 
@@ -21,7 +26,8 @@ This implementation uses a modern, Gradle-based directory structure rather than 
 * The main method of a MicroJava program is always called `main`.
   When MicroJava program is executed, this method is called first (i.e. it's the program's entry point).
 * There are:
-  * Value/primitive types (`int`, `char` and `bool`) and reference/structured types (one-dimensional arrays and user-defined classes)
+  * Value/primitive types (`int`, `char` and `bool`) and reference/structured types (one-dimensional arrays and
+    user-defined classes)
   * Integer, character and boolean constants
   * Global, local and class variables (i.e. fields)
   * Global (static) and class functions (i.e. methods).
@@ -34,14 +40,17 @@ This implementation uses a modern, Gradle-based directory structure rather than 
   The act of converting a subclass reference into a superclass reference is called up-casting.
 * Superclass methods can be **overridden** in its subclass.
   Because of that, method binding occurs at run-time, based on the type of the object.
-  This is **polymorphism** (also called dynamic binding or late binding or run‐time binding) and it is a key principle of OOP.
-* Within a method, the name of a field refers to the current object's field, assuming that the field isn't hidden by a method parameter.
+  This is **polymorphism** (also called dynamic binding or late binding or run‐time binding) and it is a key principle
+  of OOP.
+* Within a method, the name of a field refers to the current object's field, assuming that the field isn't hidden by a
+  method parameter.
   If it is hidden, we can access it through `this.<field-name>`.
   In the body of a method, `this` represents reference to the object whose method has been invoked.
 * Method overloading is not supported in MicroJava.
 * There is no `Object` class, the top‐most class, the class from which all other classes are implicitly derived.
 * There is no garbage collector (allocated objects are only deallocated when the program ends).
-* Predeclared static methods are `ord` (converts `char` to `int`), `chr` (converts `int` to `char`) and `len` (returns array's length).
+* Predeclared static methods are `ord` (converts `char` to `int`), `chr` (converts `int` to `char`) and `len` (returns
+  array's length).
 
 ## Syntax specification
 
@@ -86,21 +95,31 @@ This implementation uses a modern, Gradle-based directory structure rather than 
 `charConst` is a sequence starting with `'` followed by a single printable character and ending with `'`.
 `boolConst` is either `true` or `false`.
 
-MicroJava's single line comment starts with two forward slashes with no white spaces (`//`) and lasts till the end of line.
+MicroJava's single line comment starts with two forward slashes with no white spaces (`//`) and lasts till the end of
+line.
 
 ## Building and testing the project
 
-To build and test this project you will need [Java 17](https://adoptium.net/temurin/) (the latest LTS release as of February 2023) and [Gradle 7.3](https://docs.gradle.org/current/userguide/userguide.html).
-Open command-line interpreter and type one of the following commands:
+To build and test this project you will need [Java 25](https://adoptium.net/temurin/releases?version=25&os=any&arch=any)
+(the latest LTS release as of February 2026) and
+[Gradle 9.3.1](https://services.gradle.org/distributions/gradle-9.3.1-all.zip). Open command-line interpreter and type
+one of the following commands:
 
-* `gradlew lexer` (Windows) or `./gradlew lexer` (macOS and Linux) — to generate lexer (tokenizer) implementation (`MJLexer.java`) based on [lexer specification](src/main/resources/mjlexer.flex).
-* `gradlew parser` (Windows) or `./gradlew parser` (macOS and Linux) — to generate parser implementation (`MJParser.java`, `sym.java`) and abstract syntax tree implementation (classes inside `ast` directory), based on [parser specification](src/main/resources/mjparser.cup).
-* `gradlew build` (Windows) or `./gradlew build` (macOS and Linux) — to build the project, test the compiler and run MicroJava VM. MicroJava Compiler will compile the test file [`simple_calculator.mj`](src/test/resources/simple_calculator.mj) and produce `simple_calculator.obj`. Then, the machine code inside `simple_calculator.obj` will be executed by MicroJava VM.
-Note that, for testing purposes, standard input has been substituted with a file named [`input_stream.txt`](src/test/resources/input_stream.txt).
-* `gradlew disassemble` (Windows) or `./gradlew disassemble` (macOS and Linux) — to disassemble `simple_calculator.obj` produced in the previous step, using [`rs.etf.pp1.mj.runtime.disasm`](libs/mj-runtime-1.1.jar).
+* `gradlew lexer` (Windows) or `./gradlew lexer` (macOS and Linux) — to generate lexer (tokenizer) implementation
+  (`MJLexer.java`) based on [lexer specification](src/main/resources/mjlexer.flex).
+* `gradlew parser` (Windows) or `./gradlew parser` (macOS and Linux) — to generate parser implementation 
+  (`MJParser.java`, `sym.java`) and abstract syntax tree implementation (classes inside `ast` directory), based on
+  [parser specification](src/main/resources/mjparser.cup).
+* `gradlew build` (Windows) or `./gradlew build` (macOS and Linux) — to build the project, test the compiler and run
+  MicroJava VM. MicroJava Compiler will compile the test file [`simple_calculator.mj`](src/test/resources/simple_calculator.mj) and produce
+  `simple_calculator.obj`. Then, the machine code inside `simple_calculator.obj` will be executed by MicroJava VM. Note
+  that, for testing purposes, standard input has been substituted with a file named [`input_stream.txt`](src/test/resources/input_stream.txt).
+* `gradlew disassemble` (Windows) or `./gradlew disassemble` (macOS and Linux) — to disassemble `simple_calculator.obj`
+  produced in the previous step, using [`rs.etf.pp1.mj.runtime.disasm`](libs/mj-runtime-1.1.jar).
 
 You can always run MicroJava Compiler as a standalone application.
-In order to achieve this, you just have to type `gradlew run <source-file-name> <obj-file-name>` (Windows) or `./gradlew run <source-file-name> <obj-file-name>` (macOS and Linux).
+In order to achieve this, you just have to type `gradlew run <source-file-name> <obj-file-name>` (Windows) or
+`./gradlew run <source-file-name> <obj-file-name>` (macOS and Linux).
 
 ---
 **If you find this repository useful, please consider starring it! ⭐**
