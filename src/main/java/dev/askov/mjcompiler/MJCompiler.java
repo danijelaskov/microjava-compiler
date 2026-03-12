@@ -41,12 +41,12 @@ public class MJCompiler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MJCompiler.class);
 
-  public static void tsdump() {
+  public static void dumpSymbolTable() {
     MJTab.dump(LOGGER);
   }
 
   public static void main(String[] args) throws Exception {
-    if (args.length != 2) {
+    if (args.length < 2) {
       LOGGER.error("Too few arguments. Usage: MJCompiler <source-file> <obj-file>");
       return;
     }
@@ -72,7 +72,7 @@ public class MJCompiler {
         var semanticAnalyzer = new SemanticAnalyzer();
         program.traverseBottomUp(semanticAnalyzer);
 
-        tsdump();
+        dumpSymbolTable();
 
         if (!semanticAnalyzer.semanticErrorDetected()) {
 

@@ -695,7 +695,7 @@ public class CodeGenerator extends VisitorAdaptor {
     }
   }
 
-  private class ThisParameterLoader extends CodeGenerator {
+  private class ThisParameterLoader extends VisitorAdaptor {
 
     @Override
     public void visit(IdentDesignator identDesignator) {

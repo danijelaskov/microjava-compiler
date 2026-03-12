@@ -36,7 +36,12 @@ import rs.etf.pp1.symboltable.concepts.Struct;
 public class MJTab extends Tab {
 
   public static final Struct BOOL_TYPE = new Struct(Struct.Bool);
-  public static final String MAIN = "main", TRUE = "true", FALSE = "false";
+  public static final Struct INT_ARRAY_TYPE = new Struct(Struct.Array, Tab.intType);
+
+  public static final String MAIN = "main";
+  public static final String TRUE = "true";
+  public static final String FALSE = "false";
+
   public static Obj lenMethod;
   public static Obj ordMethod;
   public static Obj chrMethod;
@@ -46,15 +51,21 @@ public class MJTab extends Tab {
   public static Obj vecTimesScalarMethod;
   public static Obj scalarTimesVecMethod;
   public static Obj vecPlusVecMethod;
-  public static final Struct INT_ARRAY_TYPE = new Struct(Struct.Array, Tab.intType);
 
-  private static final String PRINT_BOOL = "$printBool", READ_BOOL = "$readBool";
-  private static final String VEC_TIMES_VEC = "$vecTimesVec",
-      VEC_PLUS_VEC = "$vecPlusVec",
-      VEC_TIMES_SCALAR = "$vecTimesScalar",
-      SCALAR_TIMES_VEC = "$scalarTimesVecMethod";
-  private static final String LEN = "len", ORD = "ord", CHR = "chr";
+  private static final String PRINT_BOOL = "$printBool";
+  private static final String READ_BOOL = "$readBool";
+
+  private static final String VEC_TIMES_VEC = "$vecTimesVec";
+  private static final String VEC_PLUS_VEC = "$vecPlusVec";
+  private static final String VEC_TIMES_SCALAR = "$vecTimesScalar";
+  private static final String SCALAR_TIMES_VEC = "$scalarTimesVecMethod";
+
+  private static final String LEN = "len";
+  private static final String ORD = "ord";
+  private static final String CHR = "chr";
+
   private static final Map<Struct, Obj> CLASS_OBJS = new HashMap<>();
+
   private static int classId = 0;
 
   public static void init() {
