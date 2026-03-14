@@ -767,7 +767,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
             detectSemanticError(
                 null,
                 methodCallDesignatorStatement,
-                SemanticErrorKind.UNINVOKABLE_METHOD,
+                SemanticErrorKind.NON_INVOCABLE_METHOD,
                 invokedMethodSignatureGenerator.getMethodSignature(),
                 classMethodSignature.getThisParameterType());
           } else {
@@ -1173,7 +1173,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
             detectSemanticError(
                 null,
                 methodCallFactor,
-                SemanticErrorKind.UNINVOKABLE_METHOD,
+                SemanticErrorKind.NON_INVOCABLE_METHOD,
                 invokedMethodSignatureGenerator.getMethodSignature(),
                 classMethodSignature.getThisParameterType());
           } else {
@@ -1306,33 +1306,33 @@ public class SemanticAnalyzer extends VisitorAdaptor {
   }
 
   @Override
-  public void visit(ArrayElemAccessDesignator arrayElemAcessDesignator) {
-    var array = arrayElemAcessDesignator.getDesignatorStart().obj;
+  public void visit(ArrayElemAccessDesignator arrayElemAccessDesignator) {
+    var array = arrayElemAccessDesignator.getDesignatorStart().obj;
     if (array.getType().getKind() != Struct.Array) {
       if (!array.getType().equals(MJTab.noType)) {
         detectSemanticError(
-            null, arrayElemAcessDesignator, SemanticErrorKind.INDEXING_NON_ARRAY, array.getType());
+            null, arrayElemAccessDesignator, SemanticErrorKind.INDEXING_NON_ARRAY, array.getType());
       } else {
         detectSemanticError();
       }
-      arrayElemAcessDesignator.obj = MJTab.noObj;
+      arrayElemAccessDesignator.obj = MJTab.noObj;
     } else {
-      var indexType = arrayElemAcessDesignator.getExpr().obj.getType();
+      var indexType = arrayElemAccessDesignator.getExpr().obj.getType();
       if (!indexType.equals(MJTab.intType)) {
         detectSemanticError(
             null,
-            arrayElemAcessDesignator,
+            arrayElemAccessDesignator,
             SemanticErrorKind.TYPE_MISMATCH,
             indexType,
             MJTab.intType);
       }
-      arrayElemAcessDesignator.obj =
+      arrayElemAccessDesignator.obj =
           new Obj(
               Obj.Elem,
               "",
               array.getType().getElemType() != null ? array.getType().getElemType() : MJTab.noType);
     }
-    symbolUsageMJLogger.log(array, arrayElemAcessDesignator.getLine(), null, array);
+    symbolUsageMJLogger.log(array, arrayElemAccessDesignator.getLine(), null, array);
   }
 
   @Override
@@ -1396,36 +1396,36 @@ public class SemanticAnalyzer extends VisitorAdaptor {
   }
 
   @Override
-  public void visit(ArrayElemAccessDesignatorStart arrayElemAcessDesignatorStart) {
-    var array = arrayElemAcessDesignatorStart.getDesignatorStart().obj;
+  public void visit(ArrayElemAccessDesignatorStart arrayElemAccessDesignatorStart) {
+    var array = arrayElemAccessDesignatorStart.getDesignatorStart().obj;
     if (array.getType().getKind() != Struct.Array) {
       if (!array.getType().equals(MJTab.noType)) {
         detectSemanticError(
             null,
-            arrayElemAcessDesignatorStart,
+            arrayElemAccessDesignatorStart,
             SemanticErrorKind.INDEXING_NON_ARRAY,
             array.getType());
       } else {
         detectSemanticError();
       }
-      arrayElemAcessDesignatorStart.obj = MJTab.noObj;
+      arrayElemAccessDesignatorStart.obj = MJTab.noObj;
     } else {
-      var indexType = arrayElemAcessDesignatorStart.getExpr().obj.getType();
+      var indexType = arrayElemAccessDesignatorStart.getExpr().obj.getType();
       if (!indexType.equals(MJTab.intType)) {
         detectSemanticError(
             null,
-            arrayElemAcessDesignatorStart,
+            arrayElemAccessDesignatorStart,
             SemanticErrorKind.TYPE_MISMATCH,
             indexType,
             MJTab.intType);
       }
-      arrayElemAcessDesignatorStart.obj =
+      arrayElemAccessDesignatorStart.obj =
           new Obj(
               Obj.Elem,
               "",
               array.getType().getElemType() != null ? array.getType().getElemType() : MJTab.noType);
     }
-    symbolUsageMJLogger.log(array, arrayElemAcessDesignatorStart.getLine(), null, array);
+    symbolUsageMJLogger.log(array, arrayElemAccessDesignatorStart.getLine(), null, array);
   }
 
   @Override

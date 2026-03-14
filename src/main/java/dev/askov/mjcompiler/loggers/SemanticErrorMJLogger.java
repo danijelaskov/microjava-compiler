@@ -57,7 +57,7 @@ public class SemanticErrorMJLogger extends MJLogger<Obj> {
     ACCESSING_MEMBER_OF_NON_OBJECT,
     UNRESOLVED_MEMBER,
     INCOMPATIBLE_RET_TYPE,
-    UNINVOKABLE_METHOD,
+    NON_INVOCABLE_METHOD,
   }
 
   public SemanticErrorMJLogger() {
@@ -119,19 +119,19 @@ public class SemanticErrorMJLogger extends MJLogger<Obj> {
                   + MJUtils.typeToString((Struct) ((Object[]) (context[1]))[1])
                   + "\"";
       case UNDEF_METHOD -> {
-        var cntx1 = (Object[]) context[1];
-        var overriddenMethodSignature1 = (MethodSignature) cntx1[0];
-        message = "The method \"" + overriddenMethodSignature1.toString() + "\" is undefined";
+        var args = (Object[]) context[1];
+        var methodSignature = (MethodSignature) args[0];
+        message = "The method \"" + methodSignature.toString() + "\" is undefined";
       }
       case MISPLACED_BREAK -> message = "break cannot be used outside of a loop";
       case MISPLACED_CONTINUE -> message = "continue cannot be used outside of a loop";
       case UNDEF_OP -> {
-        var cntx2 = (Object[]) context[1];
-        var operator = (String) cntx2[cntx2.length - 1];
+        var args = (Object[]) context[1];
+        var operator = (String) args[args.length - 1];
         var operandTypes = new StringBuilder();
-        for (var i = 0; i < cntx2.length - 1; i++) {
-          operandTypes.append("\"").append(MJUtils.typeToString((Struct) cntx2[i])).append("\"");
-          if (i < cntx2.length - 2) {
+        for (var i = 0; i < args.length - 1; i++) {
+          operandTypes.append("\"").append(MJUtils.typeToString((Struct) args[i])).append("\"");
+          if (i < args.length - 2) {
             operandTypes.append(", ");
           }
         }
@@ -154,22 +154,19 @@ public class SemanticErrorMJLogger extends MJLogger<Obj> {
       case UNRESOLVED_MEMBER ->
           message = "\"" + obj.getName() + "\" cannot be resolved to a class member";
       case INCOMPATIBLE_RET_TYPE -> {
-        var cntx3 = (Object[]) context[1];
-        var overriddenMethodSignature2 = (ClassMethodSignature) cntx3[0];
-        message =
-            "The return type is incompatible with \""
-                + overriddenMethodSignature2.toString()
-                + "\"";
+        var args = (Object[]) context[1];
+        var methodSignature = (ClassMethodSignature) args[0];
+        message = "The return type is incompatible with \"" + methodSignature.toString() + "\"";
       }
-      case UNINVOKABLE_METHOD -> {
-        var cntx4 = (Object[]) context[1];
-        var overriddenMethodSignature3 = (MethodSignature) cntx4[0];
-        var type = (Struct) cntx4[1];
+      case NON_INVOCABLE_METHOD -> {
+        var args = (Object[]) context[1];
+        var methodSignature = (MethodSignature) args[0];
+        var type = (Struct) args[1];
         message =
             "Cannot invoke \""
-                + overriddenMethodSignature3.getMethodName()
+                + methodSignature.getMethodName()
                 + " "
-                + overriddenMethodSignature3.getParameterList()
+                + methodSignature.getParameterList()
                 + "\" on the type \""
                 + MJUtils.typeToString(type)
                 + "\"";
