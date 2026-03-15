@@ -20,18 +20,18 @@
 package dev.askov.mjcompiler.loggers;
 
 import dev.askov.mjcompiler.SemanticAnalyzer;
-import dev.askov.mjcompiler.mjsymboltable.MJDumpSymbolTableVisitor;
+import dev.askov.mjcompiler.symboltable.MJDumpSymbolTableVisitor;
 import rs.etf.pp1.symboltable.concepts.Obj;
 import rs.etf.pp1.symboltable.concepts.Struct;
 
 /**
  * @author Danijel Askov
  */
-public final class SymbolUsageMJLogger extends MJLogger<Obj> {
+public final class SymbolUsageLogger extends MJLogger<Obj> {
 
   private final MJDumpSymbolTableVisitor symbolTableVisitor = new MJDumpSymbolTableVisitor(false);
 
-  public SymbolUsageMJLogger() {
+  public SymbolUsageLogger() {
     super(Type.INFO_LOGGER, "Symbol usage");
   }
 

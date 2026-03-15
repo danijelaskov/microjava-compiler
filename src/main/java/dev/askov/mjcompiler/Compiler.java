@@ -22,7 +22,7 @@ package dev.askov.mjcompiler;
 import dev.askov.mjcompiler.ast.Program;
 import dev.askov.mjcompiler.inheritancetree.InheritanceTree;
 import dev.askov.mjcompiler.inheritancetree.visitor.InheritanceTreePrinter;
-import dev.askov.mjcompiler.mjsymboltable.MJTab;
+import dev.askov.mjcompiler.symboltable.MJTab;
 import dev.askov.mjcompiler.vmt.VMTCodeGenerator;
 import dev.askov.mjcompiler.vmt.VMTCreator;
 import dev.askov.mjcompiler.vmt.VMTStartAddressGenerator;
@@ -37,9 +37,9 @@ import rs.etf.pp1.mj.runtime.Code;
 /**
  * @author Danijel Askov
  */
-public class MJCompiler {
+public class Compiler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MJCompiler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Compiler.class);
 
   public static void dumpSymbolTable() {
     MJTab.dump(LOGGER);
@@ -47,7 +47,7 @@ public class MJCompiler {
 
   public static void main(String[] args) throws Exception {
     if (args.length < 2) {
-      LOGGER.error("Too few arguments. Usage: MJCompiler <source-file> <obj-file>");
+      LOGGER.error("Too few arguments. Usage: Compiler <source-file> <obj-file>");
       return;
     }
     var sourceFile = new File(args[0]);
@@ -57,8 +57,8 @@ public class MJCompiler {
     }
     LOGGER.info("Compiling source file \"{}\"...", sourceFile.getAbsolutePath());
     try (var br = new BufferedReader(new FileReader(sourceFile))) {
-      var lexer = new MJLexer(br);
-      var parser = new MJParser(lexer);
+      var lexer = new Lexer(br);
+      var parser = new Parser(lexer);
       var symbol = parser.parse();
 
       if (!parser.lexicalErrorDetected() && !parser.syntaxErrorDetected()) {

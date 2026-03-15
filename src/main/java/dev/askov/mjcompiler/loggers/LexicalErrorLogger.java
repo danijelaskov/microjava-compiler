@@ -22,9 +22,9 @@ package dev.askov.mjcompiler.loggers;
 /**
  * @author Danijel Askov
  */
-public class LexicalErrorMJLogger extends MJLogger<String> {
+public class LexicalErrorLogger extends MJLogger<String> {
 
-  public LexicalErrorMJLogger() {
+  public LexicalErrorLogger() {
     super(Type.ERROR_LOGGER, "Lexical error");
   }
 

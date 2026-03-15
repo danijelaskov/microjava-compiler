@@ -24,7 +24,7 @@ import java_cup.runtime.Symbol;
 /**
  * @author Danijel Askov
  */
-public class SyntaxErrorMJLogger extends MJLogger<Symbol> {
+public class SyntaxErrorLogger extends MJLogger<Symbol> {
 
   public enum SyntaxErrorKind {
     INV_GLOBAL_VAR_DECL,
@@ -37,7 +37,7 @@ public class SyntaxErrorMJLogger extends MJLogger<Symbol> {
     INV_DECL,
   }
 
-  public SyntaxErrorMJLogger() {
+  public SyntaxErrorLogger() {
     super(Type.ERROR_LOGGER, "Syntax error");
   }
 

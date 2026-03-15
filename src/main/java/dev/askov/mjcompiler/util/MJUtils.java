@@ -20,7 +20,7 @@
 package dev.askov.mjcompiler.util;
 
 import dev.askov.mjcompiler.methodsignature.ClassMethodSignature;
-import dev.askov.mjcompiler.mjsymboltable.MJTab;
+import dev.askov.mjcompiler.symboltable.MJTab;
 import java.util.Optional;
 import java.util.OptionalInt;
 import rs.etf.pp1.symboltable.concepts.Obj;

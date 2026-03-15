@@ -100,14 +100,14 @@ import dev.askov.mjcompiler.ast.VoidFormPars;
 import dev.askov.mjcompiler.ast.VoidReturnType;
 import dev.askov.mjcompiler.ast.VoidSuperclass;
 import dev.askov.mjcompiler.inheritancetree.InheritanceTree;
-import dev.askov.mjcompiler.loggers.SemanticErrorMJLogger;
-import dev.askov.mjcompiler.loggers.SemanticErrorMJLogger.SemanticErrorKind;
-import dev.askov.mjcompiler.loggers.SymbolUsageMJLogger;
+import dev.askov.mjcompiler.loggers.SemanticErrorLogger;
+import dev.askov.mjcompiler.loggers.SemanticErrorLogger.SemanticErrorKind;
+import dev.askov.mjcompiler.loggers.SymbolUsageLogger;
 import dev.askov.mjcompiler.methodsignature.ClassMethodSignature;
 import dev.askov.mjcompiler.methodsignature.GlobalMethodSignature;
 import dev.askov.mjcompiler.methodsignature.MethodSignature;
 import dev.askov.mjcompiler.methodsignature.MethodSignatureGenerator;
-import dev.askov.mjcompiler.mjsymboltable.MJTab;
+import dev.askov.mjcompiler.symboltable.MJTab;
 import dev.askov.mjcompiler.util.MJUtils;
 import java.util.Optional;
 import java.util.Stack;
@@ -124,8 +124,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
   private boolean semanticErrorDetected = false;
 
-  private final SymbolUsageMJLogger symbolUsageMJLogger = new SymbolUsageMJLogger();
-  private final SemanticErrorMJLogger semanticErrorMJLogger = new SemanticErrorMJLogger();
+  private final SymbolUsageLogger symbolUsageLogger = new SymbolUsageLogger();
+  private final SemanticErrorLogger semanticErrorLogger = new SemanticErrorLogger();
 
   public boolean semanticErrorDetected() {
     return semanticErrorDetected;
@@ -137,7 +137,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
       SemanticErrorKind semanticErrorKind,
       Object... context) {
     semanticErrorDetected = true;
-    semanticErrorMJLogger.log(symbolObj, syntaxNode.getLine(), null, semanticErrorKind, context);
+    semanticErrorLogger.log(symbolObj, syntaxNode.getLine(), null, semanticErrorKind, context);
   }
 
   private void detectSemanticError() {
@@ -1248,7 +1248,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
   public void visit(NewScalarFactor newScalarFactor) {
     newScalarFactor.obj = newScalarFactor.getType().obj;
     if (newScalarFactor.obj.getType().getKind() == Struct.Class) {
-      symbolUsageMJLogger.log(newScalarFactor.obj, newScalarFactor.getLine(), null);
+      symbolUsageLogger.log(newScalarFactor.obj, newScalarFactor.getLine(), null);
     }
   }
 
@@ -1293,9 +1293,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
       } else {
         detectSemanticError();
       }
-      symbolUsageMJLogger.log(identObj, identDesignator.getLine(), null, currentMethodObj);
+      symbolUsageLogger.log(identObj, identDesignator.getLine(), null, currentMethodObj);
     } else {
-      symbolUsageMJLogger.log(identObj, identDesignator.getLine(), null, currentMethodObj);
+      symbolUsageLogger.log(identObj, identDesignator.getLine(), null, currentMethodObj);
     }
 
     identDesignator.obj = identObj;
@@ -1332,7 +1332,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
               "",
               array.getType().getElemType() != null ? array.getType().getElemType() : MJTab.noType);
     }
-    symbolUsageMJLogger.log(array, arrayElemAccessDesignator.getLine(), null, array);
+    symbolUsageLogger.log(array, arrayElemAccessDesignator.getLine(), null, array);
   }
 
   @Override
@@ -1356,12 +1356,12 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     } else {
       memberAccessDesignatorObj = findNearestDeclaration(memberName, designatorStartObj);
       if (memberAccessDesignatorObj != Tab.noObj) {
-        symbolUsageMJLogger.log(memberAccessDesignatorObj, memberAccessDesignator.getLine(), null);
+        symbolUsageLogger.log(memberAccessDesignatorObj, memberAccessDesignator.getLine(), null);
       } else {
         memberAccessDesignatorObj = new Obj(Obj.NO_VALUE, memberName, MJTab.noType);
         detectSemanticError(
             memberAccessDesignatorObj, memberAccessDesignator, SemanticErrorKind.UNRESOLVED_MEMBER);
-        symbolUsageMJLogger.log(memberAccessDesignatorObj, memberAccessDesignator.getLine(), null);
+        symbolUsageLogger.log(memberAccessDesignatorObj, memberAccessDesignator.getLine(), null);
       }
     }
 
@@ -1387,9 +1387,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
         || identObj.getKind() == Obj.Prog) {
       identObj = new Obj(Obj.NO_VALUE, identDesignatorStartIdent, MJTab.noType);
       detectSemanticError(identObj, identDesignatorStart, SemanticErrorKind.UNRESOLVED_VARIABLE);
-      symbolUsageMJLogger.log(identObj, identDesignatorStart.getLine(), null, currentMethodObj);
+      symbolUsageLogger.log(identObj, identDesignatorStart.getLine(), null, currentMethodObj);
     } else {
-      symbolUsageMJLogger.log(identObj, identDesignatorStart.getLine(), null, currentMethodObj);
+      symbolUsageLogger.log(identObj, identDesignatorStart.getLine(), null, currentMethodObj);
     }
 
     identDesignatorStart.obj = identObj;
@@ -1425,7 +1425,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
               "",
               array.getType().getElemType() != null ? array.getType().getElemType() : MJTab.noType);
     }
-    symbolUsageMJLogger.log(array, arrayElemAccessDesignatorStart.getLine(), null, array);
+    symbolUsageLogger.log(array, arrayElemAccessDesignatorStart.getLine(), null, array);
   }
 
   @Override
@@ -1449,7 +1449,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     } else {
       memberAccessDesignatorStartObj = findNearestDeclaration(memberName, designatorStartObj);
       if (memberAccessDesignatorStartObj != MJTab.noObj) {
-        symbolUsageMJLogger.log(
+        symbolUsageLogger.log(
             memberAccessDesignatorStartObj, memberAccessDesignatorStart.getLine(), null);
       } else {
         memberAccessDesignatorStartObj = new Obj(Obj.NO_VALUE, memberName, MJTab.noType);
@@ -1457,7 +1457,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
             memberAccessDesignatorStartObj,
             memberAccessDesignatorStart,
             SemanticErrorKind.UNRESOLVED_MEMBER);
-        symbolUsageMJLogger.log(
+        symbolUsageLogger.log(
             memberAccessDesignatorStartObj, memberAccessDesignatorStart.getLine(), null);
       }
     }

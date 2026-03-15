@@ -19,7 +19,7 @@
 
 package dev.askov.mjcompiler.vmt;
 
-import dev.askov.mjcompiler.mjsymboltable.MJTab;
+import dev.askov.mjcompiler.symboltable.MJTab;
 import dev.askov.mjcompiler.util.MJUtils;
 import java.util.HashSet;
 import java.util.Optional;

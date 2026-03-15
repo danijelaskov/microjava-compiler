@@ -20,17 +20,17 @@
 package dev.askov.mjcompiler;
 
 import java_cup.runtime.Symbol;
-import dev.askov.mjcompiler.loggers.LexicalErrorMJLogger;
+import dev.askov.mjcompiler.loggers.LexicalErrorLogger;
 
 %%
 
-%class MJLexer
+%class Lexer
 %cup
 %line
 %column
 
 %{
-	LexicalErrorMJLogger lexicalErrorMJLogger = new LexicalErrorMJLogger();
+	LexicalErrorLogger lexicalErrorLogger = new LexicalErrorLogger();
 
 	private Symbol newSymbol(int type) {
 		return new Symbol(type, yyline + 1, yycolumn + 1);
@@ -128,5 +128,5 @@ Identifier = [a-zA-Z][a-zA-Z0-9_]*
 	{Identifier}           { return newSymbol(sym.IDENT, yytext()); }
 	
 	// Lexical error (all text editors use 1-based indexing for lines, so yyline is incremented by 1)
-	[^]                    { lexicalErrorMJLogger.log(yytext(), yyline + 1, yycolumn + 1); return newSymbol(sym.ERROR); }
+	[^]                    { lexicalErrorLogger.log(yytext(), yyline + 1, yycolumn + 1); return newSymbol(sym.ERROR); }
 }

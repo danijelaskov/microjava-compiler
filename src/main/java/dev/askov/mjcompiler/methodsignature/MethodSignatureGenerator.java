@@ -26,7 +26,7 @@ import dev.askov.mjcompiler.ast.MemberAccessDesignator;
 import dev.askov.mjcompiler.ast.MultipleExprExprList;
 import dev.askov.mjcompiler.ast.SingleExprExprList;
 import dev.askov.mjcompiler.ast.VisitorAdaptor;
-import dev.askov.mjcompiler.mjsymboltable.MJTab;
+import dev.askov.mjcompiler.symboltable.MJTab;
 import rs.etf.pp1.symboltable.concepts.Obj;
 
 /**

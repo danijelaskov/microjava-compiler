@@ -21,7 +21,7 @@ package dev.askov.mjcompiler;
 
 import java_cup.runtime.*;
 import dev.askov.mjcompiler.ast.*;
-import dev.askov.mjcompiler.loggers.SyntaxErrorMJLogger;
+import dev.askov.mjcompiler.loggers.SyntaxErrorLogger;
 
 parser code {:
 	
@@ -42,7 +42,7 @@ parser code {:
     	return fatalSyntaxErrorDetected;
     }
 
-	SyntaxErrorMJLogger syntaxErrorMJLogger = new SyntaxErrorMJLogger();
+	SyntaxErrorLogger syntaxErrorLogger = new SyntaxErrorLogger();
 	
 	@Override
 	public void syntax_error(Symbol cur_token) {
@@ -51,7 +51,7 @@ parser code {:
 	
 	@Override
 	public void unrecovered_syntax_error(Symbol cur_token) throws java.lang.Exception {
-		syntaxErrorMJLogger.log(null, cur_token.left, null, SyntaxErrorMJLogger.SyntaxErrorKind.FATAL_ERROR);
+		syntaxErrorLogger.log(null, cur_token.left, null, SyntaxErrorLogger.SyntaxErrorKind.FATAL_ERROR);
 	    report_fatal_error(null, null);
 	}
 	
@@ -285,8 +285,8 @@ ErrorProneGlobalVarDecl ::= (VarDecl) Type GlobalVarList SEMI
                          
 ErrorGlobalVarDecl    ::= (ErrorGlobalVarDecl) error
                           {:
-                             Symbol symbol = (Symbol)(CUP$MJParser$stack.elementAt(CUP$MJParser$top));
-                             parser.syntaxErrorMJLogger.log(null, symbol.left, null, SyntaxErrorMJLogger.SyntaxErrorKind.INV_DECL);
+                             Symbol symbol = (Symbol)(CUP$Parser$stack.elementAt(CUP$Parser$top));
+                             parser.syntaxErrorLogger.log(null, symbol.left, null, SyntaxErrorLogger.SyntaxErrorKind.INV_DECL);
                              parser.report_error(null, null);
                           :};
 
@@ -297,8 +297,8 @@ ErrorProneGlobalVar   ::= (VectorGlobalVar) IDENT:ident LBRACKET RBRACKET
                        |  (ScalarGlobalVar) IDENT:ident
                        |  (ErrorGlobalVar) error
                           {:
-                             Symbol symbol = (Symbol)(CUP$MJParser$stack.elementAt(CUP$MJParser$top));
-                             parser.syntaxErrorMJLogger.log(null, symbol.left, null, SyntaxErrorMJLogger.SyntaxErrorKind.INV_GLOBAL_VAR_DECL);
+                             Symbol symbol = (Symbol)(CUP$Parser$stack.elementAt(CUP$Parser$top));
+                             parser.syntaxErrorLogger.log(null, symbol.left, null, SyntaxErrorLogger.SyntaxErrorKind.INV_GLOBAL_VAR_DECL);
                              parser.report_error(null, null);
                           :};
 
@@ -308,8 +308,8 @@ ErrorProneSuperclass  ::= (NonVoidSuperclass) EXTENDS Type
                        |  (VoidSuperclass) /* epsilon */
                        |  (ErrorSuperclass) EXTENDS error
                           {:
-                             Symbol symbol = (Symbol)(CUP$MJParser$stack.elementAt(CUP$MJParser$top));
-                             parser.syntaxErrorMJLogger.log(null, symbol.left, null, SyntaxErrorMJLogger.SyntaxErrorKind.INV_CLASS_INHERITANCE);
+                             Symbol symbol = (Symbol)(CUP$Parser$stack.elementAt(CUP$Parser$top));
+                             parser.syntaxErrorLogger.log(null, symbol.left, null, SyntaxErrorLogger.SyntaxErrorKind.INV_CLASS_INHERITANCE);
                              parser.report_error(null, null);
                           :};
 
@@ -320,15 +320,15 @@ ErrorProneFieldDecl   ::= (CorrectFieldDecl) Type FieldList SEMI
                        |  (ErrorFieldDecl1) ErrorFieldDecl SEMI
                        |  (ErrorFieldDecl2) error
                           {:
-                             Symbol symbol = (Symbol)(CUP$MJParser$stack.elementAt(CUP$MJParser$top));
-                             parser.syntaxErrorMJLogger.log(null, symbol.left, null, SyntaxErrorMJLogger.SyntaxErrorKind.INV_CLASS_FIELD_DECL);
+                             Symbol symbol = (Symbol)(CUP$Parser$stack.elementAt(CUP$Parser$top));
+                             parser.syntaxErrorLogger.log(null, symbol.left, null, SyntaxErrorLogger.SyntaxErrorKind.INV_CLASS_FIELD_DECL);
                              parser.report_error(null, null);
                           :};
 
 ErrorFieldDecl        ::= (ErrorFieldDecl) error
                           {:
-                             Symbol symbol = (Symbol)(CUP$MJParser$stack.elementAt(CUP$MJParser$top));
-                             parser.syntaxErrorMJLogger.log(null, symbol.left, null, SyntaxErrorMJLogger.SyntaxErrorKind.INV_CLASS_FIELD_DECL);
+                             Symbol symbol = (Symbol)(CUP$Parser$stack.elementAt(CUP$Parser$top));
+                             parser.syntaxErrorLogger.log(null, symbol.left, null, SyntaxErrorLogger.SyntaxErrorKind.INV_CLASS_FIELD_DECL);
                              parser.report_error(null, null);
                           :};
 
@@ -362,8 +362,8 @@ ErrorProneFormPar     ::= (VectorFormPar) Type IDENT:ident LBRACKET RBRACKET
                        |  (ScalarFormPar) Type IDENT:ident
                        |  (ErrorFormPar) error
                           {:
-                             Symbol symbol = (Symbol)(CUP$MJParser$stack.elementAt(CUP$MJParser$top));
-                             parser.syntaxErrorMJLogger.log(null, symbol.left, null, SyntaxErrorMJLogger.SyntaxErrorKind.INV_FORM_PAR);
+                             Symbol symbol = (Symbol)(CUP$Parser$stack.elementAt(CUP$Parser$top));
+                             parser.syntaxErrorLogger.log(null, symbol.left, null, SyntaxErrorLogger.SyntaxErrorKind.INV_FORM_PAR);
                              parser.report_error(null, null);
                           :};
                        
@@ -447,8 +447,8 @@ Addop                 ::= (PlusAddop) PLUS
 ErrorProneExpr        ::= (CorrectExpr) Expr
                        |  (ErrorExpr) error
                           {:
-                             Symbol symbol = (Symbol)(CUP$MJParser$stack.elementAt(CUP$MJParser$top));
-                             parser.syntaxErrorMJLogger.log(null, symbol.left, null, SyntaxErrorMJLogger.SyntaxErrorKind.INV_ASSIGNMENT);
+                             Symbol symbol = (Symbol)(CUP$Parser$stack.elementAt(CUP$Parser$top));
+                             parser.syntaxErrorLogger.log(null, symbol.left, null, SyntaxErrorLogger.SyntaxErrorKind.INV_ASSIGNMENT);
                              parser.report_error(null, null);
                           :};
 
@@ -457,8 +457,8 @@ ConditionStart        ::= (ConditionStart) /* epsilon */;
 ErrorProneCondition   ::= (CorrectCondition) Condition
                        |  (ErrorCondition) error
                           {:
-                             Symbol symbol = (Symbol)(CUP$MJParser$stack.elementAt(CUP$MJParser$top));
-                             parser.syntaxErrorMJLogger.log(null, symbol.left, null, SyntaxErrorMJLogger.SyntaxErrorKind.INV_IF_STMT_COND);
+                             Symbol symbol = (Symbol)(CUP$Parser$stack.elementAt(CUP$Parser$top));
+                             parser.syntaxErrorLogger.log(null, symbol.left, null, SyntaxErrorLogger.SyntaxErrorKind.INV_IF_STMT_COND);
                              parser.report_error(null, null);
                           :};
 

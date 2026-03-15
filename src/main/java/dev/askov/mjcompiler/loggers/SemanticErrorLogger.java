@@ -29,7 +29,7 @@ import rs.etf.pp1.symboltable.concepts.Struct;
 /**
  * @author Danijel Askov
  */
-public class SemanticErrorMJLogger extends MJLogger<Obj> {
+public class SemanticErrorLogger extends MJLogger<Obj> {
 
   public enum SemanticErrorKind {
     INAPPLICABLE_METHOD,
@@ -60,7 +60,7 @@ public class SemanticErrorMJLogger extends MJLogger<Obj> {
     NON_INVOCABLE_METHOD,
   }
 
-  public SemanticErrorMJLogger() {
+  public SemanticErrorLogger() {
     super(Type.ERROR_LOGGER, "Semantic error");
   }
 

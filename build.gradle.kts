@@ -14,7 +14,7 @@ java {
 }
 
 application {
-    mainClass.set("dev.askov.mjcompiler.MJCompiler")
+    mainClass.set("dev.askov.mjcompiler.Compiler")
 }
 
 repositories {
@@ -78,12 +78,12 @@ tasks.register<JavaExec>("lexer") {
     mainClass.set("JFlex.Main")
     classpath = sourceSets.main.get().compileClasspath
 
-    val outputFile = jflexDir.file("dev/askov/mjcompiler/MJLexer.java")
+    val outputFile = jflexDir.file("dev/askov/mjcompiler/Lexer.java")
 
-    inputs.file("src/main/resources/mjlexer.flex")
+    inputs.file("src/main/resources/lexer.flex")
     outputs.file(outputFile)
 
-    args("-d", outputFile.asFile.parent, "src/main/resources/mjlexer.flex")
+    args("-d", outputFile.asFile.parent, "src/main/resources/lexer.flex")
 }
 
 tasks.register<JavaExec>("parser") {
@@ -100,7 +100,7 @@ tasks.register<JavaExec>("parser") {
 
     workingDir = genSourceRoot
 
-    inputs.file("src/main/resources/mjparser.cup")
+    inputs.file("src/main/resources/parser.cup")
     outputs.dir(genSourceRoot)
 
     doFirst {
@@ -111,11 +111,11 @@ tasks.register<JavaExec>("parser") {
         "-destdir",
         "dev/askov/mjcompiler",
         "-parser",
-        "MJParser",
+        "Parser",
         "-ast",
         "dev.askov.mjcompiler.ast",
         "-buildtree",
-        file("src/main/resources/mjparser.cup").absolutePath,
+        file("src/main/resources/parser.cup").absolutePath,
     )
 }
 

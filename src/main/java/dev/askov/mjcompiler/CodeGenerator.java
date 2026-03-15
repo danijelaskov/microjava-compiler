@@ -22,7 +22,7 @@ package dev.askov.mjcompiler;
 import dev.askov.mjcompiler.ast.*;
 import dev.askov.mjcompiler.inheritancetree.InheritanceTree;
 import dev.askov.mjcompiler.inheritancetree.InheritanceTreeNode;
-import dev.askov.mjcompiler.mjsymboltable.MJTab;
+import dev.askov.mjcompiler.symboltable.MJTab;
 import dev.askov.mjcompiler.util.MJUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
