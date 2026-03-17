@@ -81,7 +81,7 @@ Identifier = [a-zA-Z][a-zA-Z0-9_]*
 	"const"                { return newSymbol(sym.CONST); }
 	
 	// Operators
-	// Arithmetic operatrors
+	// Arithmetic operators
 	"+"                    { return newSymbol(sym.PLUS); }
 	"-"                    { return newSymbol(sym.MINUS); }
 	"*"                    { return newSymbol(sym.TIMES); }
@@ -89,14 +89,14 @@ Identifier = [a-zA-Z][a-zA-Z0-9_]*
 	"%"                    { return newSymbol(sym.MOD); }
 	"++"                   { return newSymbol(sym.INCR); }
 	"--"                   { return newSymbol(sym.DECR); }
-	// Relational operatrors
+	// Relational operators
 	"=="                   { return newSymbol(sym.EQ); }
 	"!="                   { return newSymbol(sym.NEQ); }
 	"<"                    { return newSymbol(sym.LT); }
 	"<="                   { return newSymbol(sym.LEQ); }
 	">"                    { return newSymbol(sym.GT); }
 	">="                   { return newSymbol(sym.GEQ); }
-	// Logical operatrors
+	// Logical operators
 	"&&"                   { return newSymbol(sym.AND); }
 	"||"                   { return newSymbol(sym.OR); }
 

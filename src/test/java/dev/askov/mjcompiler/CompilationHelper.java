@@ -70,10 +70,6 @@ public class CompilationHelper {
       this.parseResult = parseResult;
       this.semanticError = semanticError;
     }
-
-    public boolean hasErrors() {
-      return parseResult.hasErrors() || semanticError;
-    }
   }
 
   @SuppressWarnings("unchecked")
@@ -198,17 +194,17 @@ public class CompilationHelper {
     return compileAndRun(source, "");
   }
 
-  public static String runVM(File objFile, String input) throws Exception {
+  public static String runVM(File objFile, String input) {
     var originalIn = System.in;
     var originalOut = System.out;
     try {
       System.setIn(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)));
-      var baos = new ByteArrayOutputStream();
-      System.setOut(new PrintStream(baos, true, StandardCharsets.UTF_8));
+      var outputStream = new ByteArrayOutputStream();
+      System.setOut(new PrintStream(outputStream, true, StandardCharsets.UTF_8));
 
       Run.main(new String[] {objFile.getAbsolutePath()});
 
-      var output = baos.toString(StandardCharsets.UTF_8);
+      var output = outputStream.toString(StandardCharsets.UTF_8);
       var completionIndex = output.indexOf("\nCompletion took");
       if (completionIndex >= 0) {
         output = output.substring(0, completionIndex);
