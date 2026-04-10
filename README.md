@@ -21,7 +21,7 @@ CI workflow, and a clean, modular directory structure.
 
 ## Main language features
 
-* A MicoJava program is a single text file (conventionally, the extension `.mj` is used).
+* A MicroJava program is a single text file (conventionally, the extension `.mj` is used).
   It always starts with the keyword `program`.
 * The main method of a MicroJava program is always called `main`.
   When MicroJava program is executed, this method is called first (i.e. it's the program's entry point).
@@ -95,6 +95,16 @@ CI workflow, and a clean, modular directory structure.
 `charConst` is a sequence starting with `'` followed by a single printable character and ending with `'`.
 `boolConst` is either `true` or `false`.
 
+The `+` and `*` operators support the following vector (array) operand combinations in addition to standard scalar
+arithmetic:
+
+| Expression      | Result type | Description                                                   |
+|-----------------|-------------|---------------------------------------------------------------|
+| `int[] + int[]` | `int[]`     | Element-wise addition (both arrays must have the same length) |
+| `int[] * int[]` | `int`       | Dot product (both arrays must have the same length)           |
+| `int[] * int`   | `int[]`     | Element-wise multiplication by a scalar                       |
+| `int * int[]`   | `int[]`     | Element-wise multiplication by a scalar                       |
+
 MicroJava's single line comment starts with two forward slashes with no white spaces (`//`) and lasts till the end of
 line.
 
@@ -106,10 +116,10 @@ To build and test this project you will need [Java 25](https://adoptium.net/temu
 one of the following commands:
 
 * `gradlew lexer` (Windows) or `./gradlew lexer` (macOS and Linux) — to generate lexer (tokenizer) implementation
-  (`Lexer.java`) based on [lexer specification](src/main/resources/mjlexer.flex).
+  (`Lexer.java`) based on [lexer specification](src/main/resources/lexer.flex).
 * `gradlew parser` (Windows) or `./gradlew parser` (macOS and Linux) — to generate parser implementation 
   (`Parser.java`, `sym.java`) and abstract syntax tree implementation (classes inside `ast` directory), based on
-  [parser specification](src/main/resources/mjparser.cup).
+  [parser specification](src/main/resources/parser.cup).
 * `gradlew build` (Windows) or `./gradlew build` (macOS and Linux) — to build the project and run the test suite.
 * `gradlew disassemble` (Windows) or `./gradlew disassemble` (macOS and Linux) — to disassemble
   [`simple_calculator.obj`](src/test/resources/simple_calculator.obj) (compiled from
